@@ -1,0 +1,20 @@
+{
+  "name": "Top-100-Movies",
+  "version": "1.0.0",
+  "description": "Project by Atul and Sanjay",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/attainu/Top-100-Movies.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/attainu/Top-100-Movies/issues"
+  },
+  "homepage": "https://github.com/attainu/Top-100-Movies#readme"
+}
