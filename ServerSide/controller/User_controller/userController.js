@@ -4,6 +4,8 @@ const {compare , hash} = require('bcryptjs')
 
 
 module.exports = {
+
+  //User Registration Part
   async register(req, res) {
     try {
       const {  name,email, password, dob,city } = req.body;
@@ -28,6 +30,7 @@ module.exports = {
     }
   },
 
+  //USer Login Part
   async login(req, res) {
     try {
       const user = req.user;
@@ -54,6 +57,7 @@ module.exports = {
     } 
     },
 
+    //UserEmail varification Part
     async EmailVerification (req,res)  {
       try{
   
@@ -70,6 +74,8 @@ module.exports = {
       }
      
   },
+
+  //user Logout Part
   async logout(req,res) {
     const { email, password } = req.body
     if(!email || !password){ console.log('please enter email and password') }
@@ -91,7 +97,7 @@ module.exports = {
       const {email,oldpassword,newpassword} = req.body
   
       //find that user
-      User.findOne({email:email})//.then(function(olduser){}) .then( async (olduser){})
+      User.findOne({email:email})
       .then( async (olduser)=>{
           if(!olduser) return res.status(400).send('user does not exist')
           try {
