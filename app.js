@@ -1,4 +1,5 @@
 const express = require("express");
+const bodyParser = require ("body-parser");
 const session = require("express-session");
 const passport = require("passport");
 const dotenv = require("dotenv");
@@ -31,4 +32,6 @@ app.use(passport.initialize());
 app.use(require("./routes/userroutes"))
 
 app.get('/',(_,res) => res.send('Hello world'));
+app.get('/logout',(_, res) => res.send('you have been logged out successfully'));
+
 module.exports = app ;

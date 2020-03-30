@@ -18,10 +18,14 @@ module.exports = {
       renderDeactivate(_, res) {
         res.render("deactivateAccount");
       },
+
+      renderLogout(_, res){
+        res.render("logout");
+      },
       async registerUser(req, res) {
         try {
           await User.create({ ...req.body });
-          // req.session.userId = user.id;
+          req.session.userId = user.id;
           res.redirect("/");
         } catch (err) {
           console.log(err);
@@ -38,6 +42,7 @@ module.exports = {
         try {
           const user = await User.findByEmailAndPassword(email, password);
           req.session.userId = user.dataValues.id;
+          console.log(user.dataValues.id);
           res.redirect("/");
         } catch (err) {
           console.log(err.message);
@@ -72,5 +77,18 @@ module.exports = {
           console.log(err.message);
           res.status(500).send("Server Error");
         }
+      },
+
+      async logoutUser(req,res){
+        if(res.session)
+        try{
+          console.log(req.session.id);
+          await req.session.destroy();
+          return res.redirect("/login");
+        } catch (err) {
+          console.log(err.message);
+          res.status(500).send("server error(unable to logout)");
+        }
       }
+  
 };
