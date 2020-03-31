@@ -25,7 +25,6 @@ module.exports = {
       async registerUser(req, res) {
         try {
           await User.create({ ...req.body });
-          req.session.userId = user.id;
           res.redirect("/");
         } catch (err) {
           console.log(err);
