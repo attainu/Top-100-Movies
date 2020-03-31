@@ -14,16 +14,19 @@ module.exports = {
           .status(400)
           .send({ statusCode: 400, message: "Bad request" });
       }
+      const PreUsers = User.findOne({email:email})
+      if(PreUsers.email) {
+        console.log(`User ${PreUsers.name} already exist`)
+       return  res.send(`User ${PreUsers.name} already exist`)
+      }
       const user = await User.create({name, email,  password, dob, city });
       const accessToken = await user.generateToken();
-      res.status(201).json({
+      return res.status(201).json({
         statusCode: 201,
         user,
         accessToken: `JWT ${accessToken}`,
         expiresIn: "12h"
-      });
-    
-    
+      });    
     } catch (err) {
       console.log(err);
       res.status(500).send("Server Error");
@@ -34,21 +37,21 @@ module.exports = {
   async login(req, res) {
     try {
       const user = req.user;
-     const emailConfirm = user.Isconfirmed     
-     if(!emailConfirm==false){
-      const accessToken = await user.generateToken();
-      console.log('login success at: '+user.email)
-      res.json({
-        statusCode: 200,
-        user,
-        accessToken: `JWT ${accessToken}`,
-        expiresIn: "12h"
-      });
+      const emailConfirm = user.Isconfirmed     
+      if(!emailConfirm==false){
+        const accessToken = await user.generateToken();
+        console.log('login success at: '+user.email)
+        res.json({
+          statusCode: 200,
+          user,
+          accessToken: `JWT ${accessToken}`,
+          expiresIn: "12h"
+        });
 
      }
      else {
-       res.send("please go to your email inbox and confirm it first")
-       console.log('please go to your email inbox and confirm it first')
+       res.send("Confirmation Email sent by your Registered Email  ")
+       console.log('Confirmation Email sent by your Registered Email  ')
     }
      
     }
@@ -66,6 +69,7 @@ module.exports = {
          if(nModified == 1){
              console.log('Email verify Success')
            return  res.send('Email Verify Success')
+
          }
          
       }
@@ -113,8 +117,8 @@ module.exports = {
                   const{ nModified }=await  User.updateOne({_id:id},{$set:{password:hashedPassword}})  
                   console.log(nModified)             
                  if(nModified==1){
-                     console.log('password changed successfull')
-                     res.send('password changes success')
+                     console.log('Password changed ')
+                     res.send('Password Changes ')
                  }
                  else{
                      console.log('some error of changing password:DB')
