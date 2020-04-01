@@ -24,6 +24,10 @@ module.exports = {
       renderRegister(_, res) {
         res.render("register");
       },
+      
+      renderConfirmation(_,res){
+        res.render("confirmation")
+      },
     
       renderChangePassword(_, res) {
         res.render("changePassword");
@@ -32,10 +36,12 @@ module.exports = {
       renderDeactivate(_, res) {
         res.render("deactivateAccount");
       },
+      
 
       renderLogout(_, res){
         res.render("logout");
       },
+      
       async registerUser(req, res) {
         try {
           await User.create({ ...req.body });
@@ -55,7 +61,7 @@ module.exports = {
             const url = `http://localhost:1234/confirmation/${token}`;
             await transporter.sendMail({
               to: user.email,
-              subject: 'confirmation email',
+              subject: 'confirmation email:please verify your email id to access TOP 100 Movies',
               html:  `Please click link to confirm your email: <a href="${url}">${url}</a>`,
             });
            
@@ -64,11 +70,22 @@ module.exports = {
           
           //try block end
           res.redirect("/");
-        } catch (err) {
-          console.log(err);
+        } catch (error) {
+          console.log(error);
           if (err.name === "SequelizeValidationError")
             return res.status(400).send(`Validation Error: ${err.message}`);
         }
+      },
+
+      async confirmation(req,res){
+        try {
+          const { user: { email } } = jwt.verify(req.params.token, process.env.JWT_KEY);
+          await user.update({ confirmed: true }, { where: { email } });
+        } catch (e) {
+          console.log(e.message);
+          res.send('error');
+        }
+        return res.redirect(`http://localhost:1234/login`);
       },
     
       async loginUser(req, res) {
@@ -122,6 +139,7 @@ module.exports = {
           res.status(500).send("Server Error");
         }
       },
+      
 
       async logoutUser(req,res){
         
