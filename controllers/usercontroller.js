@@ -1,5 +1,19 @@
 const User = require("../models/User");
 
+const jwt = require("jsonwebtoken");
+const nodemailer = require("nodemailer");
+
+const transporter = nodemailer.createTransport({
+  service: 'Gmail',
+  auth: {
+    user: process.env.GMAIL_USER,
+    pass: process.env.GMAIL_PASS,
+  },
+  tls: {
+    rejectUnauthorized: false
+  }
+});
+
 
 module.exports = {
 
@@ -25,6 +39,30 @@ module.exports = {
       async registerUser(req, res) {
         try {
           await User.create({ ...req.body });
+          //jwt part stats
+          const{email,password}= req.body;
+          const user = await User.findByEmailAndPassword(email,password);
+          if(user){
+            const token = jwt.sign(
+            {
+              user:user.email
+            },
+            process.env.JWT_KEY,{
+              expiresIn:"24h"
+            }
+            ) 
+            console.log(token);
+            const url = `http://localhost:1234/confirmation/${token}`;
+            await transporter.sendMail({
+              to: user.email,
+              subject: 'confirmation email',
+              html:  `Please click link to confirm your email: <a href="${url}">${url}</a>`,
+            });
+           
+            //jwt part ends
+          } 
+          
+          //try block end
           res.redirect("/");
         } catch (err) {
           console.log(err);
@@ -36,12 +74,19 @@ module.exports = {
       async loginUser(req, res) {
         // Get the users json file
         const { email, password } = req.body;
+        // const user = await User.findByEmailAndPassword(email,password);
+        
         if (!email || !password)
           return res.status(400).send("Incorrect credentials");
         try {
           const user = await User.findByEmailAndPassword(email, password);
+         //email confimation check//
+        if(!user.confirmed){
+          throw new Error('please confirm your email to login')
+        }
           req.session.userId = user.dataValues.id;
           console.log(user.dataValues.id);
+          console.log(token);
           res.redirect("/");
         } catch (err) {
           console.log(err.message);
@@ -79,11 +124,22 @@ module.exports = {
       },
 
       async logoutUser(req,res){
-        if(res.session)
+        
         try{
+          const { email, password } = req.body;
+          const user = await User.findOne({
+            where: {
+              email
+            }
+          });
+          if (user){
           console.log(req.session.id);
+          req.session.id=user.session;
+          user.session=session;
+          console.log(session);
           await req.session.destroy();
           return res.redirect("/login");
+          }
         } catch (err) {
           console.log(err.message);
           res.status(500).send("server error(unable to logout)");

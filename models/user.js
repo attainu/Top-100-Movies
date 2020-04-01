@@ -1,7 +1,9 @@
 const sequelize = require("../db");
 const { hash, compare } = require("bcryptjs");
 const { Sequelize, Model } = require("sequelize");
+// const user = await User.findByEmailAndPassword(email, password);
 
+const nodemailer = require('nodemailer')
 class User extends Model {
   static async findByEmailAndPassword(email, password) {
     try {
@@ -32,8 +34,22 @@ const userSchema = {
   },
   password: {
     type: Sequelize.STRING,
+    allowNull: false,
+    confirmed:{
+      type:Sequelize.BOOLEAN,
+      default:false
+    }
+  },
+  city: {
+    type: Sequelize.STRING,
+    allowNull: false
+  },
+  dob: {
+    type: Sequelize.STRING,
     allowNull: false
   }
+
+  
 };
 
 User.init(userSchema, {

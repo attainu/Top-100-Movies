@@ -21,19 +21,29 @@ router.get("/register", renderRegister);
 router.get("/change-password", auth, renderChangePassword);
 router.get("/deactivate", auth, renderDeactivate);
 router.get("/logout",renderLogout);
-router.get('/logout', function(req, res, next) {
-  if (req.session) {
-    console.log(req.session.id);
-    // delete session object
-    req.session.destroy(function(err) {
-      if(err) {
-        return next(err);
-      } else {
-        console.log("you have been logged out succesfully");
-        return res.redirect('/login');
-      }
-    });
+// router.get('/logout', function(req, res, next) {
+//   if (req.session) {
+//     console.log(req.session.id);
+//     // delete session object
+//     req.session.destroy(function(err) {
+//       if(err) {
+//         return next(err);
+//       } else {
+//         console.log("you have been logged out succesfully");
+//         return res.redirect('/login');
+//       }
+//     });
+//   }
+// });
+router.get('/confirmation/:token', async (req, res) => {
+  try {
+    const { user: { email } } = jwt.verify(req.params.token, JWT_KEY);
+    await models.User.update({ confirmed: true }, { where: { email } });
+  } catch (e) {
+    res.send('error');
   }
+
+  return res.redirect(`http://localhost:${port}/login`);
 });
 // DB routes
 router.post("/login", loginUser);
