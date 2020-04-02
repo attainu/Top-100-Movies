@@ -32,13 +32,16 @@ const userSchema = {
     unique: true,
     allowNull: false
   },
+  
+  Isconfirmed:{
+    type:Sequelize.BOOLEAN,
+    default: false,
+    allowNull: true
+    
+  },
   password: {
     type: Sequelize.STRING,
-    allowNull: false,
-    confirmed:{
-      type:Sequelize.BOOLEAN,
-      default:false
-    }
+    allowNull: false
   },
   city: {
     type: Sequelize.STRING,

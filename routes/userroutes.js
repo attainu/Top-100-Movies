@@ -14,17 +14,18 @@ const { loginUser,
      renderDeactivate,
      renderLogout,
      renderConfirmation,
-     confirmation
+     confirmation,
+     logoutUser
   } = require ("../controllers/usercontroller");
 
 
 
 // Render routes
-router.get("/login", renderLogin);
-router.get("/register", renderRegister);
-router.get("/change-password", auth, renderChangePassword);
-router.get("/deactivate", auth, renderDeactivate);
-router.get("/logout",renderLogout);
+router.get("/login", loginUser);
+router.get("/register", registerUser);
+router.get("/change-password", auth, changePassword);
+router.get("/deactivate", auth, deactivateAccount);
+router.get("/logout",logoutUser);
 router.get("/confirmation/:token",confirmation);
 // router.get('/logout', function(req, res, next) {
 //   if (req.session) {
@@ -46,6 +47,8 @@ router.post("/login", loginUser);
 router.post("/register", registerUser);
 router.post("/change-password", auth, changePassword);
 router.post("/deactivate", auth, deactivateAccount);
-// router.post("/logout",renderLogout);
+router.post("/logout",logoutUser);
+router.get("/confirmation/:token",confirmation);
+
 
 module.exports = router;

@@ -1,5 +1,5 @@
 const User = require("../models/User");
-
+const auth = require("../middleware/authenticate");
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
 
@@ -44,25 +44,27 @@ module.exports = {
       
       async registerUser(req, res) {
         try {
+          // user details insertion into a new row into table
           await User.create({ ...req.body });
-          //jwt part stats
+          //jwt part starts
           const{email,password}= req.body;
           const user = await User.findByEmailAndPassword(email,password);
+          usernamename = user.dataValues.name;
           if(user){
             const token = jwt.sign(
             {
-              user:user.email
+              user:user.email,
             },
             process.env.JWT_KEY,{
               expiresIn:"24h"
             }
             ) 
-            console.log(token);
+            // console.log(token);
             const url = `http://localhost:1234/confirmation/${token}`;
             await transporter.sendMail({
               to: user.email,
               subject: 'confirmation email:please verify your email id to access TOP 100 Movies',
-              html:  `Please click link to confirm your email: <a href="${url}">${url}</a>`,
+              html:  `hi "${username}" Please click link to confirm your email: <a href="${url}">${url}</a>`,
             });
            
             //jwt part ends
@@ -72,43 +74,48 @@ module.exports = {
           res.redirect("/");
         } catch (error) {
           console.log(error);
-          if (err.name === "SequelizeValidationError")
-            return res.status(400).send(`Validation Error: ${err.message}`);
+          if (error.name === "SequelizeValidationError")
+            return res.status(400).send(`Validation Error: ${error.message}`);
         }
       },
 
       async confirmation(req,res){
         try {
-          const { user: { email } } = jwt.verify(req.params.token, process.env.JWT_KEY);
-          await user.update({ confirmed: true }, { where: { email } });
+          // const {email}=req.body
+          const { user } = jwt.verify(req.params.token, process.env.JWT_KEY);
+          console.log('im here inside try after 1st line')
+          console.log(user);
+          
+          await User.update({ Isconfirmed: true }, { where:  {email : user}, });
+          // console.log('email confirmation update success) 
+          //update success
         } catch (e) {
           console.log(e.message);
-          return res.send('error');
+          // return res.send('error didnt execute try block of confirmation');
+          return res.status(400).send("Email confirmation issue");
         }
-        return res.send("didnt enter confirmation try block");
-        // return res.redirect(`http://localhost:1234/login`);
+        // return res.send("didnt enter confirmation try block");
+        return res.redirect(`http://localhost:1234/login`);
       },
     
       async loginUser(req, res) {
         // Get the users json file
-        const { email, password } = req.body;
-        // const user = await User.findByEmailAndPassword(email,password);
-        
+        const { email, password } = req.body; 
+        const user = await User.findByEmailAndPassword(email, password);
+        // console.log("---------------------------------") 
+        // console.log(user.dataValues.Isconfirmed)
+        // console.log("---------------------------------") 
+        //email confimation check//
+        if(!user.dataValues.Isconfirmed)
+          return res.send('please confirm your email to login');    
         if (!email || !password)
           return res.status(400).send("Incorrect credentials");
         try {
-          const user = await User.findByEmailAndPassword(email, password);
-         //email confimation check//
-        if(!user.confirmed){
-          throw new Error('please confirm your email to login')
-        }
           req.session.userId = user.dataValues.id;
-          console.log(user.dataValues.id);
-          console.log(token);
-          res.redirect("/");
+          return res.redirect("/");
         } catch (err) {
           console.log(err.message);
-          res.redirect("/login");
+          return res.redirect("/login");
         }
       },
     
@@ -153,7 +160,7 @@ module.exports = {
           });
           if (user){
           console.log(req.session.id);
-          req.session.id=user.session;
+          req.session.id=user.session;  
           user.session=session;
           console.log(session);
           await req.session.destroy();
