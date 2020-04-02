@@ -13,7 +13,8 @@ const { loginUser,
      renderChangePassword,
      renderDeactivate,
      renderLogout,
-     renderConfirmation
+     renderConfirmation,
+     confirmation
   } = require ("../controllers/usercontroller");
 
 
@@ -24,7 +25,7 @@ router.get("/register", renderRegister);
 router.get("/change-password", auth, renderChangePassword);
 router.get("/deactivate", auth, renderDeactivate);
 router.get("/logout",renderLogout);
-router.get("/confirmation/:token",renderConfirmation);
+router.get("/confirmation/:token",confirmation);
 // router.get('/logout', function(req, res, next) {
 //   if (req.session) {
 //     console.log(req.session.id);

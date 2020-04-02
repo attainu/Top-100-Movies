@@ -83,9 +83,10 @@ module.exports = {
           await user.update({ confirmed: true }, { where: { email } });
         } catch (e) {
           console.log(e.message);
-          res.send('error');
+          return res.send('error');
         }
-        return res.redirect(`http://localhost:1234/login`);
+        return res.send("didnt enter confirmation try block");
+        // return res.redirect(`http://localhost:1234/login`);
       },
     
       async loginUser(req, res) {
