@@ -1,5 +1,5 @@
 {
-  "name": "top100movies",
+  "name": "server",
   "version": "1.0.0",
   "description": "top 100 movies project with postgresql",
   "main": "server.js",
