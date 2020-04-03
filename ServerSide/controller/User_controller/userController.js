@@ -4,6 +4,7 @@ const {compare , hash} = require('bcryptjs')
 const { sign } = require("jsonwebtoken");
 const nodemailer = require('nodemailer')
 
+
 module.exports = {
 
   //User Registration Part
@@ -234,7 +235,7 @@ module.exports = {
   //forgetpassword form
   async forgetpasswordform (req,res)  {
     try {
-    const { id } = await verify( req.params.token, process.env.JWT_SECRET_KEY)
+    const { id,city } = await verify( req.params.token, process.env.JWT_SECRET_KEY)
     
         if(!id) {
             console.log('this Token are not Access, please do again||')
@@ -245,7 +246,7 @@ module.exports = {
                 <form action="/update/password" method="POST" >
                     <input required type="text" name="newpassword" placeholder="new Password" />
                     <input required type="text" name="newCOMpassword" placeholder=" confirm new password"/>
-                    <input required type="text" name="city" placeholder="City Name"/>
+                    <input style="display:none;" type="text" name="${city}" />
                     <input required type="submit" value="Update" />
                 </form>
         `
@@ -296,5 +297,6 @@ module.exports = {
       }
   
   }
+  
    
 };

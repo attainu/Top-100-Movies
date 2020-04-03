@@ -1,5 +1,5 @@
 const User = require('../model/User')
-
+const {verify} = require('jsonwebtoken')
 module.exports ={
     async authentication (req,res,next)  {
         try {
@@ -57,7 +57,7 @@ async logOutAuth (req,res,next) {
         }
         
     },
-    async authentication (req,res,next)  {
+    async Regauthentication (req,res,next)  {
         try {
             const user = req.body
             const {email} = await User.findOne({email:user.email})
@@ -71,7 +71,40 @@ async logOutAuth (req,res,next) {
             console.log("Error:"+error.message)
           
         }
-    }    
+    } ,
+    async tokenAuth (req,res,next) {
+        try{
+            const authToken  = req.header('Authorization');
+            
+            if (authToken) {
+                const {id} = verify(authToken,process.env.JWT_SECRET_KEY)               
+              
+               
+                
+                if(id){
+                    if(!userArray.accessToken){
+                        console.log('Your Are Not Login ');
+                        return res.send('Your Are Not Login ')
+                    }
+                     const userArray = await User.findOne({_id:id}) 
+                     req.userData = userArray
+                    next()
+                }
+                else {
+                    console.log('Only Register Person Are Add Movie Detail Only');
+                    return res.send('Only Register Person Are Add Movie Detail Only')
+                }
+            }
+            else{
+                console.log('Not Authorized without Token');
+                return res.send('Not Authorized without Token')
+            }
+
+        }catch(err){
+            console.log(err.message)
+           return  res.send(err.message)
+        }
+    }  
     
 }
 

@@ -9,7 +9,7 @@ const userSchema = new Schema(
     name: {
       type: String,
       required: true,
-      trim: true
+      trim: false
     },
     email: {
       unique: true,
@@ -28,11 +28,11 @@ const userSchema = new Schema(
     },
     dob: {
       type:String,
-      trim:true
+      trim:false
     },
     city: {
       type:String,
-      trim:true
+      trim:false
     },
     accessToken: {
       type: String,

@@ -1,68 +1,65 @@
 const mongoose = require('mongoose')
+const mongoosePginate = require('mongoose-paginate')
 const Schema = mongoose.Schema
 
 const movieGenerSchema = new Schema(
     {
         
-        popularity : {
-            type:Number,
-            trim:true,
+        popularity:{
+            type:String
         },
-        id : {
+        vote_count:{
+            type:String
+        },
+        video:{
+            type:Number
+        },
+        poster_path:{
             type:String,
-            trim:true
+            require:true
         },
-        video : {
-            defaults:false
+        id:{
+            type:Number
         },
-        vote_count : {
-            type:Number,
-            trim:true
+        adult:{
+            default:false
         },
-        vote_average : {
-            type:Number,
-            trim:true
+        backdrop_path:{
+            type:String
         },
-        title : {
-            type:String,
-            required:true
-        },
-        release_date : {
-            type:String,
-            required:true
-        },
-        original_language : {
-            type:String,
-            trim:"true"
-        },
-        original_title : {
+        original_language:{
             type:String,
             required:true
         },
-        genre_ids : [
+        original_title:{
+            type:String,
+            required:true
+        },
+        genre_ids:[
             {
                 type:String
             }
-            
         ],
-        backdrop_path : {
-            type:String
+        title:{
+            type:String,
+            required:true
         },
-        adult : {
-            default:false
+        vote_average:{
+            type:Number
         },
-        overview : {
-            type:String
+        overview:{
+            type:String,
+            required:true
         },
-        poster_path : {
-            type:String
-        }
+        release_date:{
+            type:String,
+            required:true
+        }        
 
-
-    }
+    },
+    { timestamps: true }
 )
+movieGenerSchema.plugin(mongoosePginate)
+const movieDb = mongoose.model('MoviesGener', movieGenerSchema, "MoviesGener");
 
-
-
-const movieGenerProductSchema = mongoose.model('MoviesGener',movieGenerSchema)
-module.exports=movieGenerProductSchema
+module.exports = movieDb;

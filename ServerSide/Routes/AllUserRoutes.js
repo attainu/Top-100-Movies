@@ -1,10 +1,6 @@
 const { Router } = require("express");
-const model = require('../model/User')
-const { verify} = require('jsonwebtoken')
-const { compare,hash } = require('bcryptjs')
-const User = require('../model/User')
-const { authentication, logOutAuth ,loginAuth}  = require('../middleware/auth')
-const nodemailer = require('nodemailer')
+const { authentication,Regauthentication, logOutAuth ,loginAuth}  = require('../middleware/auth')
+
 
 const passport = require("passport");
 const { register, login, EmailVerification,changePassword, logout ,forgetpassword,forgetpasswordform,forgetPasswordUpdate} = require("../controller/User_controller/userController");
@@ -12,7 +8,7 @@ const { register, login, EmailVerification,changePassword, logout ,forgetpasswor
 const router = Router();
 
 //user login registration routes
-router.post("/register", register);
+router.post("/register",Regauthentication, register);
 router.post(  "/login",passport.authenticate("local", { session: false }),authentication ,login);
 router.post( '/logout',logOutAuth, logout )
 
@@ -22,6 +18,7 @@ router.post('/password/changepassword', loginAuth ,changePassword)       //passw
 router.post('/forgetpassword',authentication,logOutAuth,forgetpassword)   //forget password route
 router.get('/forgetandnewpassword/:token',forgetpasswordform)            //forget password form
 router.post('/update/password',forgetPasswordUpdate)                    //forget password update route
+
 
 
 module.exports = router;
