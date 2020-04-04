@@ -11,6 +11,7 @@ module.exports = {
   async register(req, res) {
     try {
       const {  name,email, password, dob,city } = req.body;
+      console.log(name,email)
       if (!email || !name || !password) {
         return res
           .status(400)
@@ -137,7 +138,7 @@ module.exports = {
     //update/change password
     async changePassword (req,res) {
       const {email,oldpassword,newpassword} = req.body
-  
+      
       //find that user
       User.findOne({email:email})
       .then( async (olduser)=>{

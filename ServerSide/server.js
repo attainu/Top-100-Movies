@@ -14,11 +14,10 @@ const PORT=process.env.PORT || 5050
 
 //initilization
 const app = express();
-//app.use(bodyParser.json());
-app.use(express.urlencoded({ extended:true }))
-//app.use(bodyParser.urlencoded({ extended: true }));
-app.use(morgan('dev'));
 app.use(express.json());
+app.use(express.urlencoded({ extended:false }))
+app.use(morgan('dev'));
+
 app.use(passport.initialize());
 
 

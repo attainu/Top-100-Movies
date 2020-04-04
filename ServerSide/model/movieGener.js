@@ -54,7 +54,7 @@ const movieGenerSchema = new Schema(
         release_date:{
             type:String,
             required:true
-        }        
+        }
 
     },
     { timestamps: true }

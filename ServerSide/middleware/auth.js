@@ -57,38 +57,17 @@ async logOutAuth (req,res,next) {
         }
         
     },
-    async Regauthentication (req,res,next)  {
-        try {
-            const user = req.body
-            const {email} = await User.findOne({email:user.email})
-            if(email){
-                console.log('Email already Register')
-                return res.send('Email Already Registerd')
-            }
-            return next()
-
-        } catch (error) {
-            console.log("Error:"+error.message)
-          
-        }
-    } ,
     async tokenAuth (req,res,next) {
         try{
-            const authToken  = req.header('Authorization');
-            
+            const authToken  = req.header('Authorization');            
             if (authToken) {
-                const {id} = verify(authToken,process.env.JWT_SECRET_KEY)               
-              
-               
-                
+                const {id} = verify(authToken,process.env.JWT_SECRET_KEY) 
+                          
                 if(id){
-                    if(!userArray.accessToken){
-                        console.log('Your Are Not Login ');
-                        return res.send('Your Are Not Login ')
-                    }
-                     const userArray = await User.findOne({_id:id}) 
-                     req.userData = userArray
-                    next()
+                    
+                     req.user = await User.findOne({_id:id}) 
+                     next();
+                    
                 }
                 else {
                     console.log('Only Register Person Are Add Movie Detail Only');
