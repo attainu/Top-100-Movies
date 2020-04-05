@@ -55,21 +55,7 @@ const userSchema = {
 
 
 class Moviesdata extends Model {
-  static async findByEmailAndPassword(email, password) {
-    try {
-      const user = await User.findOne({
-        where: {
-          email
-        }
-      });
-      if (!user) throw new Error("Incorrect credentials");
-      const isMatched = await compare(password, user.password);
-      if (!isMatched) throw new Error("Incorrect credentials");
-      return user;
-    } catch (err) {
-      throw err;
-    }
-  }
+  
 }
 const moviesdataSchema = {
   budget:{
