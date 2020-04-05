@@ -29,7 +29,7 @@ router.get("/change-password", auth, changePassword);
 router.get("/deactivate", auth, deactivateAccount);
 router.get("/logout",logoutUser);
 router.get("/confirmation/:token",confirmation);
-// router.get("/home",homepage);
+router.get("/home",auth,homepage);
 // router.get('/logout', function(req, res, next) {
 //   if (req.session) {
 //     console.log(req.session.id);

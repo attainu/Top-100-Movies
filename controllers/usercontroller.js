@@ -1,5 +1,6 @@
 const User = require("../models/User");
-// const Moviesdata = require("../models/User");
+const Moviesdata = require("../models/moviesdata");
+
 const auth = require("../middleware/authenticate");
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
@@ -43,23 +44,16 @@ module.exports = {
         res.render("logout");
       },
 
-      // async homepage(req,res){
+      async homepage(req,res){
         
-      //     try{
-      //       // get the users json file
-      //   // const{email,password}= req.body;
-      //   // const user = await User.findByEmailAndPassword(email,password);
-      //     // username = user.dataValues.name;
-      //       req.session.userId = user.dataValues.id;
-      //       console.log(`hi "${username}"`);
-      //       console.log(Moviesdata);
-      //       return res.status(200).send('hi this is home page');
-      //   }catch (err) {
-      //     console.log(err.message);
-      //     return res.redirect("/login");
-      //   }
+        Moviesdata.findAll({}).then((data) => {
+          res.status(200).send(data);
+          // console.log(data.dataValues);
+        }).catch((error) => {
+          console.log(error);
+        });
         
-      //   } ,
+        } ,
       
       async registerUser(req, res) {
         try {
@@ -68,7 +62,8 @@ module.exports = {
           //jwt part starts
           const{email,password}= req.body;
           const user = await User.findByEmailAndPassword(email,password);
-          usernamename = user.dataValues.name;
+          username = user.dataValues.name;
+          
           if(user){
             const token = jwt.sign(
             {
@@ -90,7 +85,7 @@ module.exports = {
           } 
           
           //try block end
-          res.redirect("/");
+          res.redirect("/login");
         } catch (error) {
           console.log(error);
           if (error.name === "SequelizeValidationError")
@@ -127,7 +122,7 @@ module.exports = {
         // console.log("---------------------------------") 
         //email confimation check//
         if(!user.dataValues.Isconfirmed)
-          return res.send('please confirm your email to login');    
+          return res.status(400).send('please confirm your email to login');    
         if (!email || !password)
           return res.status(400).send("Incorrect credentials");
         try {
@@ -172,20 +167,26 @@ module.exports = {
       async logoutUser(req,res){
         
         try{
-          const { email, password } = req.body;
-          const user = await User.findOne({
-            where: {
-              email
-            }
-          });
-          if (user){
-          console.log(req.session.id);
-          req.session.id=user.session;  
-          user.session=session;
-          console.log(session);
+          if(req.session.userId){
+            const user = await User.findByPk(req.session.userId);
+            req.user = user.dataValues;
+            await req.user.session.destroy();
+            return res.redirect("/login");
+          }
+          // const { email, password } = req.body;
+          // const user = await User.findOne({
+          //   where: {
+          //     email
+          //   }
+          // });
+          // if (user){
+          // console.log(req.session.userId);
+          // req.session.userId=user.session;  
+          // user.session=session;
+          // console.log(session);
           await req.session.destroy();
           return res.redirect("/login");
-          }
+          // }
         } catch (err) {
           console.log(err.message);
           res.status(500).send("server error(unable to logout)");
