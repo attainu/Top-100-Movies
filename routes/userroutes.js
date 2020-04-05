@@ -8,14 +8,16 @@ const { loginUser,
      registerUser,
      changePassword,
      deactivateAccount,
+     homepage,
+     confirmation,
+     logoutUser,
      renderLogin,
      renderRegister,
      renderChangePassword,
      renderDeactivate,
      renderLogout,
      renderConfirmation,
-     confirmation,
-     logoutUser
+     
   } = require ("../controllers/usercontroller");
 
 
@@ -27,6 +29,7 @@ router.get("/change-password", auth, changePassword);
 router.get("/deactivate", auth, deactivateAccount);
 router.get("/logout",logoutUser);
 router.get("/confirmation/:token",confirmation);
+// router.get("/home",homepage);
 // router.get('/logout', function(req, res, next) {
 //   if (req.session) {
 //     console.log(req.session.id);
@@ -48,7 +51,7 @@ router.post("/register", registerUser);
 router.post("/change-password", auth, changePassword);
 router.post("/deactivate", auth, deactivateAccount);
 router.post("/logout",logoutUser);
-router.get("/confirmation/:token",confirmation);
+router.post("/confirmation/:token",confirmation);
 
 
 module.exports = router;

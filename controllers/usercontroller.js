@@ -1,4 +1,5 @@
 const User = require("../models/User");
+// const Moviesdata = require("../models/User");
 const auth = require("../middleware/authenticate");
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
@@ -41,6 +42,24 @@ module.exports = {
       renderLogout(_, res){
         res.render("logout");
       },
+
+      // async homepage(req,res){
+        
+      //     try{
+      //       // get the users json file
+      //   // const{email,password}= req.body;
+      //   // const user = await User.findByEmailAndPassword(email,password);
+      //     // username = user.dataValues.name;
+      //       req.session.userId = user.dataValues.id;
+      //       console.log(`hi "${username}"`);
+      //       console.log(Moviesdata);
+      //       return res.status(200).send('hi this is home page');
+      //   }catch (err) {
+      //     console.log(err.message);
+      //     return res.redirect("/login");
+      //   }
+        
+      //   } ,
       
       async registerUser(req, res) {
         try {
@@ -97,6 +116,7 @@ module.exports = {
         // return res.send("didnt enter confirmation try block");
         return res.redirect(`http://localhost:1234/login`);
       },
+      
     
       async loginUser(req, res) {
         // Get the users json file
@@ -112,7 +132,7 @@ module.exports = {
           return res.status(400).send("Incorrect credentials");
         try {
           req.session.userId = user.dataValues.id;
-          return res.redirect("/");
+          return res.redirect("/home");
         } catch (err) {
           console.log(err.message);
           return res.redirect("/login");

@@ -6,6 +6,7 @@ const sequelize = new Sequelize(
 );
 
 sequelize.sync();
+// sequelize.sync();
 
 sequelize
 .authenticate()
