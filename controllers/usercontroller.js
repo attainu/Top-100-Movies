@@ -1,5 +1,6 @@
 const User = require("../models/User");
 const Moviesdata = require("../models/moviesdata");
+const Reviewsdata = require("../models/reviewdata")
 const { Op } = require("sequelize");
 const auth = require("../middleware/authenticate");
 const jwt = require("jsonwebtoken");
@@ -18,38 +19,140 @@ const transporter = nodemailer.createTransport({
 
 
 module.exports = {
-
-    renderLogin(_, res) {
-        res.render("login");
-      },
+  async reviewSystem(req,res) {
+        
+    try {
+       const user = await User.findOne({
+        where: {
+          email,
+         
+        } 
+      });
+        let id = user.dataValues.id;
+        let name = user.dataValues.name;
+        let email = user.dataValues.email;
+        
+        const {title,mid,review,rate} = req.body;
+        const confirm  = await Reviewsdata.findOne({$and : [ {movie_id:mid},{user_id:id} ]})   
+    if(!confirm) {
+        if (title && mid){
+            const matchingmoviesTitle = await  Moviesdata.findOne({$and:[ {title:title},{mid:mid} ]})
+            if(matchingmoviesTitle){
+            if(review || rating){
+                    const reviewSys = await Reviewsdata.create({
+                    "movie_id" : mid,
+                    "user_id"  : id,
+                    "Movie_title":title,
+                    "user_name": name,
+                    "user_email": email,
+                    "review": review,
+                    "rate":rate
+                })
+                
+                let {vote_count,vote_average,UserReviews} = await Moviesdata.findOne({_id :mid}) 
+               
+               const findMovie = await Moviesdata.findOne({mid:mid})
+               if(!findMovie){return res.send('Movies Id Not Found ')}
+               var userR = new  Moviesdata({UserReviews:[{Name:name},{Email:email},{Reviews:review}]})
+                userR.save((err,save)=>{
+                    if(!err){console.log('success')} console.log('err')
+                })
+              
+                 let averageVote = parseInt(vote_average)                  
+                let voters =parseInt( vote_count);                   
+                
+                //update rating
+                    //  where:
+    //   R = average for the movie (mean) = (Rating)
+    //   v = number of votes for the movie = (votes)
+    //   m = minimum votes required to be listed in the Top 250 (currently 1250)
+    //   C = the mean vote across the whole report (currently )
+                let R = rate;
+                let v = voters;
+                let m = 1250;
+                let C = averageVote
+                
+                var rank  = (v / (v+m)) * R + (m / (v+m)) * C;
+                var inputValue=rank.toString()           
+                var afterDot = '';
+                var beforeDots = inputValue.split('.'); 
+                var beforeDot = beforeDots[0];
+                if(beforeDots[1]){
+                     var afterDot = beforeDots[1];
+                        if(afterDot.length > 3 ){
+                        afterDot = afterDot.slice(0, 2);               
+                        }
+                afterDot = '.'+ afterDot;
     
-      renderRegister(_, res) {
-        res.render("register");
-      },
-      
-      renderConfirmation(_,res){
-        res.render("confirmation")
-      },
+        }
+        if(beforeDot){                  
+            if(beforeDot.length > 6 ){          
+                beforeDot = beforeDot.slice(0, 6);                      
+            }
+            if(beforeDots[1] == ''){
+                beforeDot = beforeDot + '.';
+            }
+        }
+        inputValue = beforeDot + afterDot;
+        voters =parseInt( vote_count)+1
+        await Moviesdata.updateOne({_id:_id},{vote_average:inputValue})
+        await Moviesdata.updateOne({_id:_id},{vote_count:voters})           
+                   
     
-      renderChangePassword(_, res) {
-        res.render("changePassword");
-      },
+                return res.status(201).json({
+                    statusCode: 201,
+                    reviewSys
+                             
+                });
+            }
+        
+            else{
+                return res.send('please give me rating or review')
+            }
+        }
+        else {
+            return res.send('Id And Title are not matched')
+        }
+        }
+        else {
+            return res.send('please enter the title or id something !')
+        }
+    }
+    else {
+        return res.send('Please Dont Do this Duplicate!!!')
+    }
+    } catch (error) {
+        return res.send(error.message)
+    }
+},
+
+
     
-      renderDeactivate(_, res) {
-        res.render("deactivateAccount");
-      },
-      
+      async allmovies(req,res){
 
-      renderLogout(_, res){
-        res.render("logout");
+        Moviesdata.findAll({}).then((data) => {
+          const {title} = req.query;
+          
+          function escapeRegex(text) {
+            var name = text || '';
+            return name.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+        };
+        const regex = new RegExp(escapeRegex(title), 'gi');
+          res.status(200).send(data);
+          // console.log(data.dataValues);
+        }).catch((error) => {
+          console.log(error);
+        });
       },
+      async addreview(req,res){
 
+      },
       async homepage(req,res){
         // try{
         //   // Get the users json file
         // const { email, password } = req.body; 
         // const user = await User.findByEmailAndPassword(email, password);
-        //   if(user.dataValues.Isactive == true)
+          // if(user.dataValues.Isactive == true)
         //   {
               Moviesdata.findAll({
                 where:{
@@ -68,7 +171,7 @@ module.exports = {
                    vote_average :{
                      [Op.gte]:7.5}  }
                     }).then((data) => {
-                res.status(200).send(data);
+                res.status(200).send(json(data));
                 // console.log(data.dataValues);
               }).catch((error) => {
                 console.log(error);
@@ -167,31 +270,19 @@ module.exports = {
 
       async logoutUser(req,res){
         // Get the users json file
-        const { email, password } = req.body; 
-        const user = await User.findByEmailAndPassword(email, password);
-        if(user){
-          await User.update({ Isactive: false }, { where:  {email : user}, });
-          }
+        // const { email, password } = req.body; 
+        // const user = await User.findByEmailAndPassword(email, password);
+        // if(user){
+        //   await User.update({ Isactive: false }, { where:  {email : user}, });
+        //   }
         try{
           if(req.session.userId){
             const user = await User.findByPk(req.session.userId);
             req.user = user.dataValues;
-            await req.user.session.destroy();
-            
+            await req.session.destroy();
+            await User.update({ Isactive: false }, { where:  {email : user}, });
             return res.redirect("/login");
           }
-          // const { email, password } = req.body;
-          // const user = await User.findOne({
-          //   where: {
-          //     email
-          //   }
-          // });
-          // if (user){
-          // console.log(req.session.userId);
-          // req.session.userId=user.session;  
-          // user.session=session;
-          // console.log(session);
-          await req.session.destroy();
           return res.redirect("/login");
           // }
         } catch (err) {

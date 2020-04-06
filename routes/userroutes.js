@@ -4,19 +4,16 @@ const User = require("../models/User");
 const jwt = require("jsonwebtoken");
  
 const router = Router();
-const { loginUser,
+const { allmovies,
+      addreview,
+      loginUser,
      registerUser,
      changePassword,
      deactivateAccount,
      homepage,
      confirmation,
      logoutUser,
-     renderLogin,
-     renderRegister,
-     renderChangePassword,
-     renderDeactivate,
-     renderLogout,
-     renderConfirmation,
+     
      
   } = require ("../controllers/usercontroller");
 
@@ -30,6 +27,7 @@ router.get("/deactivate", auth, deactivateAccount);
 router.get("/logout",logoutUser);
 router.get("/confirmation/:token",confirmation);
 router.get("/home",auth,homepage);
+router.get("/",allmovies);
 // router.get('/logout', function(req, res, next) {
 //   if (req.session) {
 //     console.log(req.session.id);
@@ -52,6 +50,7 @@ router.post("/change-password", auth, changePassword);
 router.post("/deactivate", auth, deactivateAccount);
 router.post("/logout",logoutUser);
 router.post("/confirmation/:token",confirmation);
+router.post("/rateandreview",auth,addreview)
 
 
 module.exports = router;
