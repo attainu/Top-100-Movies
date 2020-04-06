@@ -2,6 +2,11 @@ const User = require("../models/User");
 const Moviesdata = require("../models/moviesdata");
 const Reviewsdata = require("../models/reviewdata")
 const { Op } = require("sequelize");
+// const sequelize = new Sequelize('sqlite::memory:', {
+//   operatorsAliases: {
+//     $gt: Op.gt
+//   }
+// });
 const auth = require("../middleware/authenticate");
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
@@ -24,8 +29,7 @@ module.exports = {
     try {
        const user = await User.findOne({
         where: {
-          email,
-         
+          email
         } 
       });
         let id = user.dataValues.id;
@@ -121,6 +125,7 @@ module.exports = {
     else {
         return res.send('Please Dont Do this Duplicate!!!')
     }
+    return user;
     } catch (error) {
         return res.send(error.message)
     }
@@ -144,9 +149,9 @@ module.exports = {
           console.log(error);
         });
       },
-      async addreview(req,res){
+      // async addreview(req,res){
 
-      },
+      // },
       async homepage(req,res){
         // try{
         //   // Get the users json file
@@ -171,7 +176,7 @@ module.exports = {
                    vote_average :{
                      [Op.gte]:7.5}  }
                     }).then((data) => {
-                res.status(200).send(json(data));
+                res.status(200).send(data);
                 // console.log(data.dataValues);
               }).catch((error) => {
                 console.log(error);

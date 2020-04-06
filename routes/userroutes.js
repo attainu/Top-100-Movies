@@ -5,6 +5,7 @@ const jwt = require("jsonwebtoken");
  
 const router = Router();
 const { allmovies,
+      reviewSystem,
       addreview,
       loginUser,
      registerUser,
@@ -50,7 +51,7 @@ router.post("/change-password", auth, changePassword);
 router.post("/deactivate", auth, deactivateAccount);
 router.post("/logout",logoutUser);
 router.post("/confirmation/:token",confirmation);
-router.post("/rateandreview",auth,addreview)
+router.post("/rateandreview",auth,reviewSystem);
 
 
 module.exports = router;
