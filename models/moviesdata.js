@@ -2,14 +2,19 @@ const sequelize = require("../db");
 const { Sequelize, Model } = require("sequelize");
 
 class Moviesdata extends Model {
-        // static async findAll(){
+        // static async findbyrating(vote_average){
         // try {
-        //     const moviesdata = await Moviesdata.findAll({
+        //     const rating = await Moviesdata.findAll({
         //         where: {
-        //             title
+        //             vote_average
         //         }
+        //     }).then((data) => {
+        //         this.restore.status(200).send(data);
+        //         return rating;
+        //     }).catch((error) => {
+        //         console.log(error);
         //     })
-        //   console.log(moviesdata);  
+        // //   console.log(moviesdata);  
         // } catch (error) 
         // {
         //    throw error; 

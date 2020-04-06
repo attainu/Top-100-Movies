@@ -1,6 +1,6 @@
 const User = require("../models/User");
 const Moviesdata = require("../models/moviesdata");
-
+const { Op } = require("sequelize");
 const auth = require("../middleware/authenticate");
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
@@ -45,13 +45,41 @@ module.exports = {
       },
 
       async homepage(req,res){
-        
-        Moviesdata.findAll({}).then((data) => {
-          res.status(200).send(data);
-          // console.log(data.dataValues);
-        }).catch((error) => {
-          console.log(error);
-        });
+        // try{
+        //   // Get the users json file
+        // const { email, password } = req.body; 
+        // const user = await User.findByEmailAndPassword(email, password);
+        //   if(user.dataValues.Isactive == true)
+        //   {
+              Moviesdata.findAll({
+                where:{
+                  // for geners specification
+                //   geners :{[Op.substring]:'Action',
+                //   [Op.substring]:'Adventure',
+                //   [Op.substring]:'Crime',
+                //   [Op.substring]:'Mystery',
+                //   [Op.substring]:'Science Fiction',
+                //   [Op.substring]:'Family',
+                //   [Op.substring]:'Fantasy',
+                //   [Op.substring]:'Animation'
+
+                // },
+                  // for rating above 7.5
+                   vote_average :{
+                     [Op.gte]:7.5}  }
+                    }).then((data) => {
+                res.status(200).send(data);
+                // console.log(data.dataValues);
+              }).catch((error) => {
+                console.log(error);
+              });
+
+              // Moviesdata.
+        // }
+        // } catch (error){
+        //   console.log(error.message);
+
+        // }
         
         } ,
       
@@ -126,11 +154,49 @@ module.exports = {
         if (!email || !password)
           return res.status(400).send("Incorrect credentials");
         try {
+          await User.update({ Isactive: true }, { where:  {email : user}, });
           req.session.userId = user.dataValues.id;
           return res.redirect("/home");
         } catch (err) {
           console.log(err.message);
           return res.redirect("/login");
+        }
+      },
+      
+      
+
+      async logoutUser(req,res){
+        // Get the users json file
+        const { email, password } = req.body; 
+        const user = await User.findByEmailAndPassword(email, password);
+        if(user){
+          await User.update({ Isactive: false }, { where:  {email : user}, });
+          }
+        try{
+          if(req.session.userId){
+            const user = await User.findByPk(req.session.userId);
+            req.user = user.dataValues;
+            await req.user.session.destroy();
+            
+            return res.redirect("/login");
+          }
+          // const { email, password } = req.body;
+          // const user = await User.findOne({
+          //   where: {
+          //     email
+          //   }
+          // });
+          // if (user){
+          // console.log(req.session.userId);
+          // req.session.userId=user.session;  
+          // user.session=session;
+          // console.log(session);
+          await req.session.destroy();
+          return res.redirect("/login");
+          // }
+        } catch (err) {
+          console.log(err.message);
+          res.status(500).send("server error(unable to logout)");
         }
       },
     
@@ -160,36 +226,6 @@ module.exports = {
         } catch (err) {
           console.log(err.message);
           res.status(500).send("Server Error");
-        }
-      },
-      
-
-      async logoutUser(req,res){
-        
-        try{
-          if(req.session.userId){
-            const user = await User.findByPk(req.session.userId);
-            req.user = user.dataValues;
-            await req.user.session.destroy();
-            return res.redirect("/login");
-          }
-          // const { email, password } = req.body;
-          // const user = await User.findOne({
-          //   where: {
-          //     email
-          //   }
-          // });
-          // if (user){
-          // console.log(req.session.userId);
-          // req.session.userId=user.session;  
-          // user.session=session;
-          // console.log(session);
-          await req.session.destroy();
-          return res.redirect("/login");
-          // }
-        } catch (err) {
-          console.log(err.message);
-          res.status(500).send("server error(unable to logout)");
         }
       }
   

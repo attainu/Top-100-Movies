@@ -37,6 +37,12 @@ const userSchema = {
     allowNull: true
     
   },
+  Isactive:{
+    type:Sequelize.BOOLEAN,
+    default: false,
+    allowNull: true
+    
+  },
   password: {
     type: Sequelize.STRING,
     allowNull: false
