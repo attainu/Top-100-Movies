@@ -1,5 +1,5 @@
 const { Router } = require("express");
-const { authentication,Regauthentication, logOutAuth ,loginAuth}  = require('../middleware/auth')
+const { authentication,tokenAuth }  = require('../middleware/auth')
 
 
 const passport = require("passport");
@@ -8,16 +8,16 @@ const { register, login, EmailVerification,changePassword, logout ,forgetpasswor
 const router = Router();
 
 //user login registration routes
-router.post("/register", register);
-router.post(  "/login",passport.authenticate("local", { session: false }),authentication ,login);
-router.post( '/logout',logOutAuth, logout )
+router.post("/user/register", register);
+router.post(  "/user/login",passport.authenticate("local", { session: false }),authentication ,login);
+router.post( '/user/logout',tokenAuth, logout )
 
 //all nodemailler/mail routes
-router.get('/confirmation/:token',EmailVerification)                    //email varification routes
-router.post('/password/changepassword',logOutAuth ,changePassword)       //password update routes
-router.post('/forgetpassword',authentication,logOutAuth,forgetpassword)   //forget password route
-router.get('/forgetandnewpassword/:token',forgetpasswordform)            //forget password form
-router.post('/update/password',forgetPasswordUpdate)                    //forget password update route
+router.get('/user/confirmation/:token',EmailVerification)                    //email varification routes
+router.post('/user/password/changepassword',tokenAuth ,changePassword)       //password update routes
+router.post('/user/password/forgetpassword' ,tokenAuth,forgetpassword)   //forget password route
+router.get('/user/password/forgetEmailPassword/:token',forgetpasswordform)            //forget password form
+router.post('/user/password/update',forgetPasswordUpdate)                    //forget password update route
 
 
 

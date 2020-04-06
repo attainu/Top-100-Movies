@@ -41,6 +41,7 @@ module.exports = {
                     "review": ' ',
                     "rate":''
                 })
+                
           
             return res.status(201).json({
                 statusCode: 201,
@@ -75,9 +76,17 @@ module.exports = {
                         "rate":rate
                     })
                     
-                    var {vote_count,vote_average} = await movieDb.findOne({_id :_id}) 
-                     var averageVote = parseInt(vote_average)                  
-                    var voters =parseInt( vote_count);                   
+                    let {vote_count,vote_average,UserReviews} = await movieDb.findOne({_id :_id}) 
+                   // console.log(req.user.name)
+                   const findMovie = await movieDb.findOne({_id:_id})
+                   if(!findMovie){return res.send('Movies Id Not Found ')}
+                   var userR = new  movieDb({UserReviews:[{Name:req.user.name},{Email:req.user.email},{Reviews:review}]})
+                    userR.save((err,save)=>{
+                        if(!err){console.log('success')} console.log('err')
+                    })
+                   // await movieDb.save({UserReviews:[{Name:req.user.name},{Email:req.user.email},{Reviews:review}]})
+                     let averageVote = parseInt(vote_average)                  
+                    let voters =parseInt( vote_count);                   
                     
                     //update rating
                         //  where:
@@ -85,22 +94,22 @@ module.exports = {
         //   v = number of votes for the movie = (votes)
         //   m = minimum votes required to be listed in the Top 250 (currently 1250)
         //   C = the mean vote across the whole report (currently )
-                    var R = rate;
-                    var v = voters;
-                    var m = 1250;
-                    var C = averageVote
+                    let R = rate;
+                    let v = voters;
+                    let m = 1250;
+                    let C = averageVote
                     
                     var rank  = (v / (v+m)) * R + (m / (v+m)) * C;
                     var inputValue=rank.toString()           
                     var afterDot = '';
                     var beforeDots = inputValue.split('.'); 
-            var beforeDot = beforeDots[0];
-            if(beforeDots[1]){
-                var afterDot = beforeDots[1];
-                if(afterDot.length > 3 ){
-                     afterDot = afterDot.slice(0, 2);               
-                }
-                afterDot = '.'+ afterDot;
+                    var beforeDot = beforeDots[0];
+                    if(beforeDots[1]){
+                         var afterDot = beforeDots[1];
+                            if(afterDot.length > 3 ){
+                            afterDot = afterDot.slice(0, 2);               
+                            }
+                    afterDot = '.'+ afterDot;
         
             }
             if(beforeDot){                  
@@ -114,10 +123,9 @@ module.exports = {
             inputValue = beforeDot + afterDot;
             voters =parseInt( vote_count)+1
             await movieDb.updateOne({_id:_id},{vote_average:inputValue})
-            await movieDb.updateOne({_id:_id},{vote_count:voters})
+            await movieDb.updateOne({_id:_id},{vote_count:voters})           
+                       
         
-        
-
                     return res.status(201).json({
                         statusCode: 201,
                         reviewSys

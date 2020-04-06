@@ -54,8 +54,20 @@ const movieGenerSchema = new Schema(
         release_date:{
             type:String,
             required:true
-        }
-
+        },
+        UserReviews:[
+            {
+                Name:{
+                    type:String
+                },
+                Email:{
+                    type:String
+                },
+                Reviews:{
+                    type:String
+                }
+            }
+        ]
     },
     { timestamps: true }
 )

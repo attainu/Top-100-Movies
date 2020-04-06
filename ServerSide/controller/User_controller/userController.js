@@ -11,19 +11,17 @@ module.exports = {
   async register(req, res) {
     try {
       const {  name,email, password, dob,city } = req.body;
-      console.log(name,email)
       if (!email || !name || !password) {
         return res
           .status(400)
           .send({ statusCode: 400, message: "Bad request" });
       }
-      const PreUsers = User.findOne({email:email})
-      if(PreUsers.email) {
-        console.log(`User ${PreUsers.name} already exist`)
-       return  res.send(`User ${PreUsers.name} already exist`)
+      const PreUsers =await User.findOne({email:email})
+      if(PreUsers) {
+        console.log(`Email ${PreUsers.email} already exist`)
+       return  res.send(`Email ${PreUsers.email} already exist`)
       }
       const user = await User.create({name, email,  password, dob, city });
-
 
       //for send mail
       const accessToken =  sign({ id: user._id }, process.env.JWT_SECRET_KEY, {
@@ -38,7 +36,7 @@ module.exports = {
           pass:process.env.EMAIL_PASSWORD_SECRATE
         }
       })
-      const url = `http://localhost:1234/confirmation/${accessToken}`
+      const url = `http://localhost:1234/user/confirmation/${accessToken}`
       
         await transport.sendMail({
           to:user.email,
@@ -49,19 +47,21 @@ module.exports = {
           if(!err){
              console.log('sucess maill sent at '+info.response)
             // res.send('Email sent Your register email at: '+user.email)
+            return res.status(201).json({
+              statusCode: 201,
+              user,       
+              expiresIn: "12h" ,
+              message:`Email Sent Your Register Email At:${email}`
+              
+            });
           }
                 console.log('erroorr:'+err.message)
+                return res.send("(: Pleae check your Internet connection :)")
         }
       )
       
 
-      return res.status(201).json({
-        statusCode: 201,
-        user,       
-        expiresIn: "12h" ,
-        message:`Email Sent Your Register Email At:${email}`
-        
-      });    
+         
     } catch (err) {
       console.log(err);
       res.status(500).send("Server Error");
@@ -86,6 +86,7 @@ module.exports = {
      }
      else {
       console.log('Confirmation Email sent by your Registered Email  ')
+      //for send mail
       return res.send("Email Verify First !! Confirmation Email sent on your Registered Email  "+user.email)
       
     }
@@ -137,10 +138,10 @@ module.exports = {
 
     //update/change password
     async changePassword (req,res) {
-      const {email,oldpassword,newpassword} = req.body
+      const {oldpassword,newpassword} = req.body
       
       //find that user
-      User.findOne({email:email})
+      User.findOne({email:req.user.email})
       .then( async (olduser)=>{
           if(!olduser) return res.status(400).send('user does not exist')
           try {
@@ -151,10 +152,10 @@ module.exports = {
                   return res.status(401).send('unauthorized')
               }
               if(isMatch){
-                  console.log(id)
+                 // console.log(id)
                   const hashedPassword = await hash(newpassword, 10)
                   const{ nModified }=await  User.updateOne({_id:id},{$set:{password:hashedPassword}})  
-                  console.log(nModified)             
+                 // console.log(nModified)             
                  if(nModified==1){
                      console.log('Password changed ')
                     return  res.send('Password Changes ')
@@ -174,9 +175,9 @@ module.exports = {
           }
           
   })
-  .catch(err =>{
-      res.status(500).send(err)
-      console.log(err.message)
+  .catch((err) =>{
+    console.log(err.message);
+    return res.send(err.message)
   })
   },
 
@@ -203,7 +204,7 @@ module.exports = {
                   pass:process.env.EMAIL_PASSWORD_SECRATE
                 }
               })    
-              const url = `http://localhost:1234/forgetandnewpassword/${accessToken}`
+              const url = `http://localhost:1234/user/password/forgetEmailPassword/${accessToken}`
           
               
                 await transport.sendMail({
@@ -218,6 +219,7 @@ module.exports = {
                     return res.send('password send by your register email: '+email)
                   }
                    console.log('erroorr:'+err.message)
+                   return res.send("(: Pleae check your Internet connection :)")
                 }
                    catch(err){
                        console.log(err.message);
@@ -244,10 +246,10 @@ module.exports = {
         }
 
         const forgetpasswordData = `
-                <form action="/update/password" method="POST" >
+                <form action="/user/password/update" method="POST" >
                     <input required type="text" name="newpassword" placeholder="new Password" />
                     <input required type="text" name="newCOMpassword" placeholder=" confirm new password"/>
-                    <input style="display:none;" type="text" name="${city}" />
+                    <input style="display:none;" type="text" name="someid" value="${id}" />
                     <input required type="submit" value="Update" />
                 </form>
         `
@@ -263,21 +265,19 @@ module.exports = {
     //forget password update controller
     async forgetPasswordUpdate (req,res)  {
       const user = req.body;
-      if(!user.oldpassword && !user.newCOMpassword && !user.city){
+     // console.log(user)
+      if(!user.oldpassword && !user.newCOMpassword ){
           console.log('Please Enter all Required Fields')
           return res.send('Please Enter all Required Fields')
       }
       try {
-          const {id,name,email,dob,city,password} = await User.findOne({city:user.city})
-
-          if(!city){
-              console.log('Your Entered city name Is Wronge . Please chack and and update IT')
-          }
+          const userdata = await User.findOne({_id:user.someid})
+          
               
               if(user.newpassword===user.newCOMpassword){
                  
                   const hashedPassword = await hash(user.newpassword, 10)
-                  const{ nModified }=await  User.updateOne({_id:id},{$set:{password:hashedPassword}})  
+                  const{ nModified }=await  User.updateOne({_id:userdata.id},{$set:{password:hashedPassword}})  
                               
                  if(nModified==1){
                  

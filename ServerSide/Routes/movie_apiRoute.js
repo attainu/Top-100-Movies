@@ -10,8 +10,8 @@ const router = express.Router();
 //all movies
 router.post('/movies',allMovie)
 
-router.post('/movies/add_movie',tokenAuth,addMovieData);
+router.post('/movies/user/add_movie',tokenAuth,addMovieData);
 
-router.post('/movies/review',tokenAuth,reviewSystem)
+router.post('/movies/user/GiveReview',tokenAuth,reviewSystem)
 
-module.exports = router;
+module.exports = router;  
