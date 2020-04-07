@@ -14,6 +14,7 @@ const { allmovies,
      homepage,
      confirmation,
      logoutUser,
+     addmovie
      
      
   } = require ("../controllers/usercontroller");
@@ -25,7 +26,7 @@ router.get("/login", loginUser);
 router.get("/register", registerUser);
 router.get("/change-password", auth, changePassword);
 router.get("/deactivate", auth, deactivateAccount);
-router.get("/logout",auth,logoutUser);
+router.get("/logout",logoutUser);
 router.get("/confirmation/:token",confirmation);
 router.get("/home",auth,homepage);
 router.get("/",allmovies);
@@ -51,9 +52,24 @@ router.post("/login", loginUser);
 router.post("/register", registerUser);
 router.post("/change-password", auth, changePassword);
 router.post("/deactivate", auth, deactivateAccount);
-router.post("/logout",auth,logoutUser);
+router.post("/logout",logoutUser);
 router.post("/confirmation/:token",confirmation);
-router.post("/rateandreview",reviewSystem);
+router.post("/rateandreview",auth,reviewSystem);
+router.post("/addmovie",auth,addmovie)
+// router.post('/logout', function(req, res, next) {
+//   if (req.session) {
+//     console.log(req.session.id);
+//     // delete session object
+//     req.session.destroy(function(err) {
+//       if(err) {
+//         return next(err);
+//       } else {
+//         console.log("you have been logged out succesfully");
+//         return res.redirect('/login');
+//       }
+//     });
+//   }
+// });
 
 
 module.exports = router;

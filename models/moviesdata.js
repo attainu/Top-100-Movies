@@ -1,27 +1,7 @@
 const sequelize = require("../db");
 const { Sequelize, Model } = require("sequelize");
 
-class Moviesdata extends Model {
-        // static async findbyrating(vote_average){
-        // try {
-        //     const rating = await Moviesdata.findAll({
-        //         where: {
-        //             vote_average
-        //         }
-        //     }).then((data) => {
-        //         this.restore.status(200).send(data);
-        //         return rating;
-        //     }).catch((error) => {
-        //         console.log(error);
-        //     })
-        // //   console.log(moviesdata);  
-        // } catch (error) 
-        // {
-        //    throw error; 
-        // }
-    // }
-  
-}
+class Moviesdata extends Model {}
 
 const moviesdataSchema = {
     budget:{
@@ -98,7 +78,7 @@ const moviesdataSchema = {
     },
     mid:{
       type:Sequelize.DOUBLE,
-      allowNull: true,
+      allowNull: false,
       unique: true,
       
       primaryKey: true

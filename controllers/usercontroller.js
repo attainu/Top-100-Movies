@@ -23,176 +23,8 @@ const transporter = nodemailer.createTransport({
 });
 
 
-module.exports = {
-  async reviewSystem(req,res) {
-    
-    try { 
-          const {email} = req.body
-          const user = await User.findOne({where: email});
-          const userid =  user.dataValues.id;
-          const name =   user.dataValues.name;
-          const useremail =  user.dataValues.email;
- 
-        
-        
-        // const {userid,email,name} = req.user 
-        // console.log(useremail);
-        const {title,mid,review,rate} = req.body;
-        const confirm  = await Reviewsdata.findOne({$and : [ {movie_id:mid},{user_id:userid} ]})   
-    if(!confirm) {
-        if (title && mid){
-          console.log('title and mid');
-            const matchingmoviesTitle = await  Moviesdata.findOne({$and:[ {title:title},{mid:mid} ]})
-            if(matchingmoviesTitle){
-            if(review || rating){
-                    const reviewSys = await Reviewsdata.create({
-                    "movie_id" : mid,
-                    "user_id"  : userid,
-                    "Movie_title":title,
-                    "user_name": name,
-                    "user_email": useremail,
-                    "review": review,
-                    "rate":rate
-                })
-                
-                let {vote_count,vote_average,UserReviews} = await Moviesdata.findOne({_id :mid}) 
-               
-               const findMovie = await Moviesdata.findOne({mid:mid})
-               if(!findMovie){return res.send('Movies Id Not Found ')}
-               var userR = new  Moviesdata({UserReviews:[{Name:name},{Email:email},{Reviews:review}]})
-                userR.save((err,save)=>{
-                    if(!err){console.log('success')} console.log('err')
-                })
-              
-                 let averageVote = parseInt(vote_average)                  
-                let voters =parseInt( vote_count);                   
-                
-                //update rating
-                    //  where:
-    //   R = average for the movie (mean) = (Rating)
-    //   v = number of votes for the movie = (votes)
-    //   m = minimum votes required to be listed in the Top 250 (currently 1250)
-    //   C = the mean vote across the whole report (currently )
-                let R = rate;
-                let v = voters;
-                let m = 1250;
-                let C = averageVote
-                
-                var rank  = (v / (v+m)) * R + (m / (v+m)) * C;
-                var inputValue=rank.toString()           
-                var afterDot = '';
-                var beforeDots = inputValue.split('.'); 
-                var beforeDot = beforeDots[0];
-                if(beforeDots[1]){
-                     var afterDot = beforeDots[1];
-                        if(afterDot.length > 3 ){
-                        afterDot = afterDot.slice(0, 2);               
-                        }
-                afterDot = '.'+ afterDot;
-    
-        }
-        if(beforeDot){                  
-            if(beforeDot.length > 6 ){          
-                beforeDot = beforeDot.slice(0, 6);                      
-            }
-            if(beforeDots[1] == ''){
-                beforeDot = beforeDot + '.';
-            }
-        }
-        inputValue = beforeDot + afterDot;
-        voters =parseInt( vote_count)+1
-        await Reviewsdata.updateOne({_id:mid},{vote_average:inputValue})
-        await Reviewsdata.updateOne({_id:mid},{vote_count:voters})           
-                   
-    
-                return res.status(201).json({
-                    statusCode: 201,
-                    reviewSys
-                             
-                });
-            }
-        
-            else{
-                return res.send('please give me rating or review')
-            }
-        }
-        else {
-            return res.send('Id And Title are not matched')
-        }
-        }
-        else {
-            return res.send('please enter the title or id something !')
-        }
-    }
-    else {
-        return res.send('Please Dont Do this Duplicate!!!')
-    }
-   
-    } catch (error) {
-        return res.send(error.message)
-    }
-},
-
-
-    
-      async allmovies(req,res){
-
-        Moviesdata.findAll({}).then((data) => {
-          const {title} = req.query;
-          
-          function escapeRegex(text) {
-            var name = text || '';
-            return name.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
-        };
-        const regex = new RegExp(escapeRegex(title), 'gi');
-          res.status(200).send(data);
-          // console.log(data.dataValues);
-        }).catch((error) => {
-          console.log(error);
-        });
-      },
-      // async addreview(req,res){
-
-      // },
-      async homepage(req,res){
-        // try{
-        //   // Get the users json file
-        // const { email, password } = req.body; 
-        // const user = await User.findByEmailAndPassword(email, password);
-          // if(user.dataValues.Isactive == true)
-        //   {
-              Moviesdata.findAll({
-                where:{
-                  // for geners specification
-                //   geners :{[Op.substring]:'Action',
-                //   [Op.substring]:'Adventure',
-                //   [Op.substring]:'Crime',
-                //   [Op.substring]:'Mystery',
-                //   [Op.substring]:'Science Fiction',
-                //   [Op.substring]:'Family',
-                //   [Op.substring]:'Fantasy',
-                //   [Op.substring]:'Animation'
-
-                // },
-                  // for rating above 7.5
-                   vote_average :{
-                     [Op.gte]:7.5}  }
-                    }).then((data) => {
-                res.status(200).send(data);
-                // console.log(data.dataValues);
-              }).catch((error) => {
-                console.log(error);
-              });
-
-              // Moviesdata.
-        // }
-        // } catch (error){
-        //   console.log(error.message);
-
-        // }
-        
-        } ,
-      
+module.exports = { 
+  
       async registerUser(req, res) {
         try {
           // user details insertion into a new row into table
@@ -266,6 +98,7 @@ module.exports = {
         try {
           await User.update({ Isactive: true }, { where:  {email : user}, });
           req.session.userId = user.dataValues.id;
+          // console.log(user);
           return res.redirect("/home");
         } catch (err) {
           console.log(err.message);
@@ -275,23 +108,15 @@ module.exports = {
       
       
 
-      async logoutUser(req,res){
-        // Get the users json file
-        // const { email, password } = req.body; 
-        // const user = await User.findByEmailAndPassword(email, password);
-        // if(user){
-        //   await User.update({ Isactive: false }, { where:  {email : user}, });
-        //   }
-        try{
-          if(req.session.userId){
-            const user = await User.findByPk(req.session.userId);
-            req.user = user.dataValues;
-            await req.session.destroy();
-            await User.update({ Isactive: false }, { where:  {email : user}, });
-            return res.redirect("/login");
-          }
-          return res.redirect("/login");
-          // }
+      async logoutUser(req,res,next){
+          try{
+          if(req.session){
+             req.session.destroy(function(err){
+              if(err){return next(err)}
+              else {console.log("you have been loggedout succesfully")}
+              return res.redirect('/');
+            })
+        }
         } catch (err) {
           console.log(err.message);
           res.status(500).send("server error(unable to logout)");
@@ -316,6 +141,7 @@ module.exports = {
       },
     
       async deactivateAccount(req, res) {
+      
         const { email } = req.body;
         if (!email) return res.status(400).send("Email is required");
         try {
@@ -325,6 +151,190 @@ module.exports = {
           console.log(err.message);
           res.status(500).send("Server Error");
         }
+      },
+
+
+
+      async reviewSystem(req,res) {
+    
+        try { 
+              const {email} = req.body
+              const user = await User.findOne({where: email});
+              const userid =  user.dataValues.id;
+              const name =   user.dataValues.name;
+              const useremail =  user.dataValues.email;
+     
+            
+            
+            // const {userid,email,name} = req.user 
+            // console.log(useremail);
+            const {title,mid,review,rate} = req.body;
+            const confirm  = await Reviewsdata.findOne({$and : [ {movie_id:mid},{user_id:userid} ]})   
+        if(!confirm) {
+            if (title && mid){
+              console.log(title,mid);
+                const matchingmoviesTitle = await  Moviesdata.findOne({$and:[ {title:title},{mid:mid} ]})
+                if(matchingmoviesTitle){
+                if(review || rating){
+                        const reviewSys = await Reviewsdata.create({
+                        "movie_id" : mid,
+                        "user_id"  : userid,
+                        "Movie_title":title,
+                        "user_name": name,
+                        "user_email": useremail,
+                        "review": review,
+                        "rate":rate
+                    })
+                    
+                    let {vote_count,vote_average,UserReviews} = await Moviesdata.findOne({_id :mid}) 
+                   
+                   const findMovie = await Moviesdata.findOne({mid:mid})
+                   if(!findMovie){return res.send('Movies Id Not Found ')}
+                   var userR = new  Moviesdata({UserReviews:[{Name:name},{Email:email},{Reviews:review}]})
+                    userR.save((err,save)=>{
+                        if(!err){console.log('success')} console.log('err')
+                    })
+                  
+                     let averageVote = parseInt(vote_average)                  
+                    let voters =parseInt( vote_count);                   
+                    
+                    //update rating
+                        //  where:
+        //   R = average for the movie (mean) = (Rating)
+        //   v = number of votes for the movie = (votes)
+        //   m = minimum votes required to be listed in the Top 250 (currently 1250)
+        //   C = the mean vote across the whole report (currently )
+                    let R = rate;
+                    let v = voters;
+                    let m = 1250;
+                    let C = averageVote
+                    
+                    var rank  = (v / (v+m)) * R + (m / (v+m)) * C;
+                    var inputValue=rank.toString()           
+                    var afterDot = '';
+                    var beforeDots = inputValue.split('.'); 
+                    var beforeDot = beforeDots[0];
+                    if(beforeDots[1]){
+                         var afterDot = beforeDots[1];
+                            if(afterDot.length > 3 ){
+                            afterDot = afterDot.slice(0, 2);               
+                            }
+                    afterDot = '.'+ afterDot;
+        
+            }
+            if(beforeDot){                  
+                if(beforeDot.length > 6 ){          
+                    beforeDot = beforeDot.slice(0, 6);                      
+                }
+                if(beforeDots[1] == ''){
+                    beforeDot = beforeDot + '.';
+                }
+            }
+            inputValue = beforeDot + afterDot;
+            voters =parseInt( vote_count)+1
+            await Reviewsdata.update({_id:mid},{vote_average:inputValue})
+            await Reviewsdata.update({_id:mid},{vote_count:voters})           
+                       
+        
+                    return res.status(201).json({
+                        statusCode: 201,
+                        reviewSys
+                                 
+                    });
+                }
+            
+                else{
+                    return res.send('please give me rating or review')
+                }
+            }
+            else {
+                return res.send('Id And Title are not matched')
+            }
+            }
+            else {
+                return res.send('please enter the title or id something !')
+            }
+        }
+        else {
+            return res.send('Please Dont Do this Duplicate!!!')
+        }
+       
+        } catch (error) {
+            return res.send(error.message)
+        }
+    },
+    async allmovies(req,res){
+
+      Moviesdata.findAll({}).then((data) => {
+        const {title} = req.query;
+        
+        function escapeRegex(text) {
+          var name = text || '';
+          return name.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+      };
+      const regex = new RegExp(escapeRegex(title), 'gi');
+        res.status(200).send(data);
+        // console.log(data.dataValues);
+      }).catch((error) => {
+        console.log(error);
+      });
+    },
+    
+    async homepage(req,res){
+      // try{
+      //   // Get the users json file
+      // const { email, password } = req.body; 
+      // const user = await User.findByEmailAndPassword(email, password);
+        
+            Moviesdata.findAll({
+              where:{
+                // for geners specification
+              //   geners :{[Op.substring]:'Action',
+              //   [Op.substring]:'Adventure',
+              //   [Op.substring]:'Crime',
+              //   [Op.substring]:'Mystery',
+              //   [Op.substring]:'Science Fiction',
+              //   [Op.substring]:'Family',
+              //   [Op.substring]:'Fantasy',
+              //   [Op.substring]:'Animation'
+
+              // },
+                // for rating above 7.5
+                 vote_average :{
+                   [Op.gte]:7.5}  }
+                  }).then((data) => {
+              res.status(200).send(data);
+              // console.log(data.dataValues);
+            }).catch((error) => {
+              console.log(error);
+            });
+
+            // Moviesdata.
+      
+      // } catch (error){
+      //   console.log(error.message);
+
+      // }
+      
+      } ,
+      async addmovie(req,res){
+        try{
+          const moviedetails = req.body
+          if(!moviedetails){
+            return res.send('Please Enter Some Required Movies Reletaed Data');
+          }
+          const moviedetailsdoc= await Moviesdata.create({...moviedetails})
+          
+          res.status(201).send(moviedetailsdoc)
+        }catch(err){
+          console.log(err.message);
+          return res.send(err.message);
+        }
       }
-  
+      
+    
+    
+        
+          
+          
 };
