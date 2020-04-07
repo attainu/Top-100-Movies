@@ -25,30 +25,32 @@ const transporter = nodemailer.createTransport({
 
 module.exports = {
   async reviewSystem(req,res) {
+    
+    try { 
+          const {email} = req.body
+          const user = await User.findOne({where: email});
+          const userid =  user.dataValues.id;
+          const name =   user.dataValues.name;
+          const useremail =  user.dataValues.email;
+ 
         
-    try {
-       const user = await User.findOne({
-        where: {
-          email
-        } 
-      });
-        let id = user.dataValues.id;
-        let name = user.dataValues.name;
-        let email = user.dataValues.email;
         
+        // const {userid,email,name} = req.user 
+        // console.log(useremail);
         const {title,mid,review,rate} = req.body;
-        const confirm  = await Reviewsdata.findOne({$and : [ {movie_id:mid},{user_id:id} ]})   
+        const confirm  = await Reviewsdata.findOne({$and : [ {movie_id:mid},{user_id:userid} ]})   
     if(!confirm) {
         if (title && mid){
+          console.log('title and mid');
             const matchingmoviesTitle = await  Moviesdata.findOne({$and:[ {title:title},{mid:mid} ]})
             if(matchingmoviesTitle){
             if(review || rating){
                     const reviewSys = await Reviewsdata.create({
                     "movie_id" : mid,
-                    "user_id"  : id,
+                    "user_id"  : userid,
                     "Movie_title":title,
                     "user_name": name,
-                    "user_email": email,
+                    "user_email": useremail,
                     "review": review,
                     "rate":rate
                 })
@@ -99,8 +101,8 @@ module.exports = {
         }
         inputValue = beforeDot + afterDot;
         voters =parseInt( vote_count)+1
-        await Moviesdata.updateOne({_id:_id},{vote_average:inputValue})
-        await Moviesdata.updateOne({_id:_id},{vote_count:voters})           
+        await Reviewsdata.updateOne({_id:mid},{vote_average:inputValue})
+        await Reviewsdata.updateOne({_id:mid},{vote_count:voters})           
                    
     
                 return res.status(201).json({
@@ -125,7 +127,7 @@ module.exports = {
     else {
         return res.send('Please Dont Do this Duplicate!!!')
     }
-    return user;
+   
     } catch (error) {
         return res.send(error.message)
     }

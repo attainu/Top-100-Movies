@@ -25,10 +25,12 @@ router.get("/login", loginUser);
 router.get("/register", registerUser);
 router.get("/change-password", auth, changePassword);
 router.get("/deactivate", auth, deactivateAccount);
-router.get("/logout",logoutUser);
+router.get("/logout",auth,logoutUser);
 router.get("/confirmation/:token",confirmation);
 router.get("/home",auth,homepage);
 router.get("/",allmovies);
+router.get("/rateandreview",auth,reviewSystem);
+
 // router.get('/logout', function(req, res, next) {
 //   if (req.session) {
 //     console.log(req.session.id);
@@ -49,9 +51,9 @@ router.post("/login", loginUser);
 router.post("/register", registerUser);
 router.post("/change-password", auth, changePassword);
 router.post("/deactivate", auth, deactivateAccount);
-router.post("/logout",logoutUser);
+router.post("/logout",auth,logoutUser);
 router.post("/confirmation/:token",confirmation);
-router.post("/rateandreview",auth,reviewSystem);
+router.post("/rateandreview",reviewSystem);
 
 
 module.exports = router;

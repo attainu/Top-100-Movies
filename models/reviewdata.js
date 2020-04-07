@@ -6,18 +6,25 @@ class Reviewsdata extends Model {}
 const reviewdataSchema = {
     Mid: {
         type:Sequelize.DOUBLE,
-      allowNull: false,
+      allowNull: true,
       unique: false
     },
     userid: {
         type:Sequelize.DOUBLE,
-      allowNull: false,
-      unique: true
+      allowNull: true,
+      unique: true,
+      primarykey: true
 
     },
-    useremail: {
+    title: {
+      type:Sequelize.TEXT,
+    allowNull: true,
+    unique: false
+
+  },
+    email: {
         type:Sequelize.TEXT,
-      allowNull: false,
+      allowNull: true,
       unique: true
 
     },
@@ -25,7 +32,7 @@ const reviewdataSchema = {
         type:Sequelize.TEXT,
       allowNull: true
     },
-    rating: {
+    rate: {
         type:Sequelize.DOUBLE,
       allowNull: true
 
