@@ -5,6 +5,7 @@ const { Sequelize, Model } = require("sequelize");
 class User extends Model {
   static async findByEmailAndPassword(email, password) {
     try {
+      console.log("userextends -------------------")
       const user = await User.findOne({
         where: {
           email

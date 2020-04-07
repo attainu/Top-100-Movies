@@ -29,8 +29,10 @@ module.exports = {
         try {
           // user details insertion into a new row into table
           await User.create({ ...req.body });
+          
           //jwt part starts
           const{email,password}= req.body;
+          console.log("register--------------")
           const user = await User.findByEmailAndPassword(email,password);
           username = user.dataValues.name;
           
@@ -69,7 +71,7 @@ module.exports = {
           const { user } = jwt.verify(req.params.token, process.env.JWT_KEY);
           console.log('im here inside try after 1st line')
           console.log(user);
-          
+          console.log(" confirmation ------------")
           await User.update({ Isconfirmed: true }, { where:  {email : user}, });
           // console.log('email confirmation update success) 
           //update success
@@ -86,6 +88,7 @@ module.exports = {
       async loginUser(req, res) {
         // Get the users json file
         const { email, password } = req.body; 
+        console.log("loginuser ----------")
         const user = await User.findByEmailAndPassword(email, password);
         // console.log("---------------------------------") 
         // console.log(user.dataValues.Isconfirmed)
@@ -96,6 +99,7 @@ module.exports = {
         if (!email || !password)
           return res.status(400).send("Incorrect credentials");
         try {
+          console.log("login ----------")
           await User.update({ Isactive: true }, { where:  {email : user}, });
           req.session.userId = user.dataValues.id;
           // console.log(user);
@@ -128,6 +132,7 @@ module.exports = {
         if (!email || !oldPassword || !newPassword)
           return res.status(400).send("Bad request");
         try {
+          console.log("changepswd -----------------")
           const user = await User.findByEmailAndPassword(email, oldPassword);
           if (!user) {
             return res.status(401).send("Incorrect credentials");
@@ -145,6 +150,7 @@ module.exports = {
         const { email } = req.body;
         if (!email) return res.status(400).send("Email is required");
         try {
+          console.log("deactivate account------")
           await User.destroy({ where: { email } });
           return res.redirect("/");
         } catch (err) {
@@ -159,24 +165,28 @@ module.exports = {
     
         try { 
               const {email} = req.body
+              console.log("review system------")
               const user = await User.findOne({where: email});
               const userid =  user.dataValues.id;
               const name =   user.dataValues.name;
               const useremail =  user.dataValues.email;
-     
+              
             
             
             // const {userid,email,name} = req.user 
             // console.log(useremail);
-            const {title,mid,review,rate} = req.body;
-            const confirm  = await Reviewsdata.findOne({$and : [ {movie_id:mid},{user_id:userid} ]})   
-        if(!confirm) {
-            if (title && mid){
+            const {review,rate} = req.body;
+            const mid =req.body.mid;
+            const title=req.body.title;
+            const confirm  = await Reviewsdata.findOne({$or : [ {movie_id:mid},{user_id:userid} ]})   
+        // if(confirm) {
+            // if (title && mid){
               console.log(title,mid);
                 const matchingmoviesTitle = await  Moviesdata.findOne({$and:[ {title:title},{mid:mid} ]})
-                if(matchingmoviesTitle){
-                if(review || rating){
-                        const reviewSys = await Reviewsdata.create({
+                // if(matchingmoviesTitle){
+                // if(review || rating){
+                        const reviewSys = await Reviewsdata.create
+                        ({
                         "movie_id" : mid,
                         "user_id"  : userid,
                         "Movie_title":title,
@@ -188,12 +198,12 @@ module.exports = {
                     
                     let {vote_count,vote_average,UserReviews} = await Moviesdata.findOne({_id :mid}) 
                    
-                   const findMovie = await Moviesdata.findOne({mid:mid})
-                   if(!findMovie){return res.send('Movies Id Not Found ')}
-                   var userR = new  Moviesdata({UserReviews:[{Name:name},{Email:email},{Reviews:review}]})
-                    userR.save((err,save)=>{
-                        if(!err){console.log('success')} console.log('err')
-                    })
+                  //  const findMovie = await Moviesdata.findOne({mid:mid})
+                  //  if(!findMovie){return res.send('Movies Id Not Found ')}
+                  //  var userR = new  Moviesdata({UserReviews:[{Name:name},{Email:email},{Reviews:review}]})
+                  //   userR.save((err,save)=>{
+                  //       if(!err){console.log('success')} console.log('err')
+                  //   })
                   
                      let averageVote = parseInt(vote_average)                  
                     let voters =parseInt( vote_count);                   
@@ -241,28 +251,30 @@ module.exports = {
                         reviewSys
                                  
                     });
-                }
+                // }
             
-                else{
-                    return res.send('please give me rating or review')
-                }
-            }
-            else {
-                return res.send('Id And Title are not matched')
-            }
-            }
-            else {
-                return res.send('please enter the title or id something !')
-            }
-        }
-        else {
-            return res.send('Please Dont Do this Duplicate!!!')
-        }
+        //         else{
+        //             return res.send('please give me rating or review')
+        //         }
+        //     // }
+        //     else {
+        //         return res.send('Id And Title are not matched')
+        //     }
+        //     }
+        //     else {
+        //         return res.send('please enter the title or id something !')
+        //     }
+        // }
+        // else {
+        //     return res.send('Please Dont Do this Duplicate!!!')
+        // }
        
         } catch (error) {
             return res.send(error.message)
         }
     },
+
+    //host/-
     async allmovies(req,res){
 
       Moviesdata.findAll({}).then((data) => {
