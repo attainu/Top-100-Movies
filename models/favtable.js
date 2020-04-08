@@ -46,6 +46,6 @@ Favmoviedata.init(favmovietableSchema, {
     tableName:"favmovietable"
 })
 
-// Reviewsdata.sync({alter:true});
+// Favmoviedata.sync({alter:true});
 
 module.exports = Favmoviedata;

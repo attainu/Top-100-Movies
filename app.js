@@ -2,21 +2,13 @@ const express = require("express");
 const bodyParser = require ("body-parser");
 const session = require("express-session");
 const passport = require("passport");
-// const cookieParser = require('cookie-parser');
+var cors = require("cors")
+const app = express();
 
-
-
-
-
-
-
-
-
-
+app.use(cors());
 const dotenv = require("dotenv");
 dotenv.config();
 require("./db")
-const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.urlencoded({ extended: false }));
@@ -27,7 +19,7 @@ app.use(
     name: "sequelizeSession",
     saveUninitialized: false,
     cookie: {
-      maxAge: 1000 * 60 * 30,
+      maxAge: 1000 * 60 * 1000,
       httpOnly: true,
       secure: false,
       sameSite: "strict"
@@ -37,6 +29,26 @@ app.use(
 
 // passport authentication
 app.use(passport.initialize());
+// elephantsql
+var pg = require('pg');
+//or native libpq bindings
+//var pg = require('pg').native
+
+var conString = "postgres://iygugnvx:FgRhMPVXhY4LSH33cSc5BGiqYAJz1Y3L@john.db.elephantsql.com:5432/iygugnvx" //Can be found in the Details page
+var client = new pg.Client(conString);
+client.connect(function(err) {
+  if(err) {
+    return console.error('could not connect to postgres', err);
+  }
+  client.query('SELECT NOW() AS "theTime"', function(err, result) {
+    if(err) {
+      return console.error('error running query', err);
+    }
+    console.log("connected to elephantsql ",result.rows[0].theTime);
+    // >> output: 2018-08-23T14:02:57.117Z
+    client.end();
+  });
+});
 
 
 

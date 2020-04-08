@@ -104,7 +104,7 @@ const moviesdataSchema = {
     sequelize,
     tableName: "moviesdata"
   });
-  Moviesdata.sync({alter:true});
+  // Moviesdata.sync({alter:true});
 
 
   module.exports = Moviesdata;
