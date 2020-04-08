@@ -61,7 +61,8 @@ module.exports = {
         } catch (error) {
           console.log(error);
           if (error.name === "SequelizeValidationError")
-            return res.status(400).send(`Validation Error: ${error.message}`);
+          console.log("sequelize validation error");
+            return res.status(400).send(`Validation Error: ${error.message} im in register function`);
         }
       },
 
@@ -124,7 +125,7 @@ module.exports = {
              req.session.destroy(function(err){
               if(err){return next(err)}
               else {console.log("you have been loggedout succesfully")}
-              return res.redirect('/');
+              return res.send("you have been logged out successfully")
             })
         }
         } catch (err) {
@@ -227,7 +228,7 @@ module.exports = {
           }
           const moviedetailsdoc= await Moviesdata.create({...moviedetails})
           
-          res.status(201).send(moviedetailsdoc)
+          res.status(201).send("movie has been added",moviedetailsdoc)
         }catch(err){
           console.log(err.message);
           return res.send(err.message);
@@ -241,89 +242,56 @@ module.exports = {
         try { 
               const {email} = req.body
               console.log("review system------")
-              const user = await User.findOne({include:{model:User,where:{email}}});
+              const user = await User.findOne({where:email});
               const Userid =  user.dataValues.id;
               const name =   user.dataValues.name;
               const useremail =  user.dataValues.email;
             if(user){
-            // const {userid,email,name} = req.user 
-            // console.log(useremail);
+            
             const {review,rate,mid} = req.body;
             console.log("beforemovie id")
-            const movie = await Moviesdata.findOne({where:mid});
-            
-            const title=movie.dataValues.title;
-            
-        // if( movie) {
-            // if (title && mid){
-              console.log(movie);
-              console.log(user)
-                
-                        const reviewSys = await Reviewsdata.create({
-                        "moviereviewid" : movie,
-                        "user_id"  : user.dataValues.id,
-                        "user_name": name,
-                        "user_email": useremail,
-                        "review": review,
-                        "rate":rate
+            // const movie = await Moviesdata.findAll()
+            // const title=movie.dataValues.title;
+              // console.log(movie);
+              // console.log(user.dataValues.id)
+                console.log(req.body.review)
+                console.log(rate)
+                console.log(req.body)
+                        const reviewerData = await Reviewsdata.create({
+                        MoviesdatumMid : ,
+                        UserId  : Userid,
+                        name: name,
+                        email: useremail,
+                        review:review,
+                        rate:rate
                     });
                     
-                    let {vote_count,vote_average,UserReviews} = await Moviesdata.findOne({_id :mid}) 
-                   
-                  
-                  
-                     let averageVote = parseInt(vote_average)                  
-                    let voters =parseInt( vote_count);                   
-                    
-                    //update rating
-                        //  where:
-        //   R = average for the movie (mean) = (Rating)
-        //   v = number of votes for the movie = (votes)
-        //   m = minimum votes required to be listed in the Top 250 (currently 1250)
-        //   C = the mean vote across the whole report (currently )
-                    let R = rate;
-                    let v = voters;
-                    let m = 1250;
-                    let C = averageVote
-                    
-                    var rank  = (v / (v+m)) * R + (m / (v+m)) * C;
-                    var inputValue=rank.toString()           
-                    var afterDot = '';
-                    var beforeDots = inputValue.split('.'); 
-                    var beforeDot = beforeDots[0];
-                    if(beforeDots[1]){
-                         var afterDot = beforeDots[1];
-                            if(afterDot.length > 3 ){
-                            afterDot = afterDot.slice(0, 2);               
-                            }
-                    afterDot = '.'+ afterDot;
-        
-            }
-            if(beforeDot){                  
-                if(beforeDot.length > 6 ){          
-                    beforeDot = beforeDot.slice(0, 6);                      
-                }
-                if(beforeDots[1] == ''){
-                    beforeDot = beforeDot + '.';
-                }
-            }
-            inputValue = beforeDot + afterDot;
-            voters =parseInt( vote_count)+1
-            await Reviewsdata.update({_id:mid},{vote_average:inputValue})
-            await Reviewsdata.update({_id:mid},{vote_count:voters})           
-                       
-        
-                    return res.status(201).json({
-                        statusCode: 201,
-                        reviewSys
-                                 
-                    });
+                    return res.status(201).send(reviewerData);
                 
-                 // }//else{res.status(400).send("please enter a valid movie id")}//if user block 
+               
                 }
         }catch (error) {
           return res.send(error.message) ;
     }
+  },
+
+
+  async profile(req,res){
+    // const { email, password } = req.body; 
+     
+    try{
+      const user = await User.findByEmailAndPassword(email, password);
+      if(user){
+        return res.status(200).send(user.dataValues)
+      }else{
+        return res.send("please login to view the profile")
+      }
+
+    }catch(err){
+      console.log(err.message)
+      return res.status(500).send("Sorry,cannot get your details")
+    }
+
   }
 
     

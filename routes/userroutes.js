@@ -11,7 +11,11 @@ var Reviewsdata = require("../models/reviewdata")
 // Moviesdata.hasMany(User);
 // User.hasMany(Reviewsdata);
 // Reviewsdata.hasMany(User);
-User.belongsToMany(Moviesdata, { through: Reviewsdata });
+// User.belongsToMany(Reviewsdata, { through: Moviesdata });
+Reviewsdata.belongsTo(User);
+Reviewsdata.belongsTo(Moviesdata, {as: ''})
+
+// Reviewsdata.hasMany(User, {as: ''})
 // Moviesdata.belongsToMany(User, { through: Reviewsdata });
 
 
@@ -27,7 +31,8 @@ const { allmovies,
      homepage,
      confirmation,
      logoutUser,
-     addmovie
+     addmovie,
+     profile
      
      
   } = require ("../controllers/usercontroller");
@@ -44,6 +49,7 @@ router.get("/confirmation/:token",confirmation);
 router.get("/home",auth,homepage);
 router.get("/",allmovies);
 router.get("/rateandreview",auth,reviewSystem);
+router.get("/profile",auth,profile)
 
 // router.get('/logout', function(req, res, next) {
 //   if (req.session) {
@@ -69,6 +75,7 @@ router.post("/logout",logoutUser);
 router.post("/confirmation/:token",confirmation);
 router.post("/rateandreview",auth,reviewSystem);
 router.post("/addmovie",auth,addmovie)
+
 // router.post('/logout', function(req, res, next) {
 //   if (req.session) {
 //     console.log(req.session.id);
