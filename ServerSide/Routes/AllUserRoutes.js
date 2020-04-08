@@ -15,7 +15,7 @@ router.post( '/user/logout',tokenAuth, logout )
 //all nodemailler/mail routes
 router.get('/user/confirmation/:token',EmailVerification)                    //email varification routes
 router.post('/user/password/changepassword',tokenAuth ,changePassword)       //password update routes
-router.post('/user/password/forgetpassword' ,tokenAuth,forgetpassword)   //forget password route
+router.post('/user/password/forgetpassword' ,forgetpassword)   //forget password route
 router.get('/user/password/forgetEmailPassword/:token',forgetpasswordform)            //forget password form
 router.post('/user/password/update',forgetPasswordUpdate)                    //forget password update route
 

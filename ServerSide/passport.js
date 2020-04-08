@@ -15,7 +15,7 @@ passport.use(
         return done(null, user);
       } catch (err) {
         if (err.name === "AuthError")
-          done(null, false, { message: err.message });
+          done(null, false, { message: 'Incurrect Crediential' });
         done(err);
       }
     }

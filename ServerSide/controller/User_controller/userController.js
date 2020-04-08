@@ -216,7 +216,7 @@ module.exports = {
                   try{ 
                   if(!err){
                     console.log('sucess maill sent at '+info.response)
-                    return res.send('password send by your register email: '+email)
+                    return res.send('password Link send by your register email: '+email)
                   }
                    console.log('erroorr:'+err.message)
                    return res.send("(: Pleae check your Internet connection :)")
@@ -238,8 +238,8 @@ module.exports = {
   //forgetpassword form
   async forgetpasswordform (req,res)  {
     try {
-    const { id,city } = await verify( req.params.token, process.env.JWT_SECRET_KEY)
-    
+    const { id } = await verify( req.params.token, process.env.JWT_SECRET_KEY)
+    req.params.token=null
         if(!id) {
             console.log('this Token are not Access, please do again||')
             return res.send('this Token are not Access, please do again||')
@@ -278,7 +278,7 @@ module.exports = {
                  
                   const hashedPassword = await hash(user.newpassword, 10)
                   const{ nModified }=await  User.updateOne({_id:userdata.id},{$set:{password:hashedPassword}})  
-                              
+                  await User.updateOne({_id:userdata.id},{$set:{accessToken:null}})            
                  if(nModified==1){
                  
                   return res.status(201).send('Password Changes ')

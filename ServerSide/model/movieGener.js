@@ -9,16 +9,18 @@ const movieGenerSchema = new Schema(
     {
         
         popularity:{
-            type:String
+            type:String,
+            required:true
         },
         vote_count:{
             type:String
         },
         video:{
-            type:Number
+            deaults:false
         },
         poster_path:{
-            type:String
+            type:String,
+            required:true
             
         },
         id:{
@@ -31,12 +33,13 @@ const movieGenerSchema = new Schema(
             type:String
         },
         original_language:{
-            type:String
+            type:String,
+            required:true
            
         },
         original_title:{
-            type:String
-           
+            type:String,
+            required:true
         },
         genre_ids:[
             {
