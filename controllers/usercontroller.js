@@ -1,16 +1,12 @@
 const User = require("../models/User");
 const Moviesdata = require("../models/moviesdata");
 const Reviewsdata = require("../models/reviewdata")
+var Favmoviedata = require("../models/favtable")
+
 const { Op } = require("sequelize");
-// const sequelize = new Sequelize('sqlite::memory:', {
-//   operatorsAliases: {
-//     $gt: Op.gt
-//   }
-// });
 const auth = require("../middleware/authenticate");
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
-
 const transporter = nodemailer.createTransport({
   service: 'Gmail',
   auth: {
@@ -29,13 +25,11 @@ module.exports = {
         try {
           // user details insertion into a new row into table
           await User.create({ ...req.body });
-          
           //jwt part starts
           const{email,password}= req.body;
           console.log("register--------------")
           const user = await User.findByEmailAndPassword(email,password);
           username = user.dataValues.name;
-          
           if(user){
             const token = jwt.sign(
             {
@@ -52,10 +46,8 @@ module.exports = {
               subject: 'confirmation email:please verify your email id to access TOP 100 Movies',
               html:  `hi "${username}" Please click link to confirm your email: <a href="${url}">${url}</a>`,
             });
-           
             //jwt part ends
           } 
-          
           //try block end
           res.send("please confirm your email to access the page");
         } catch (error) {
@@ -220,19 +212,23 @@ module.exports = {
       // }
       
       } ,
-      async addmovie(req,res){
-        try{
-          const moviedetails = req.body
-          if(!moviedetails){
-            return res.send('Please Enter Some Required Movies Reletaed Data');
-          }
-          const moviedetailsdoc= await Moviesdata.create({...moviedetails})
+      // async addmovie(req,res){
+      //   try{
+      //     const moviedetails = req.body
+      //     if(!moviedetails){
+      //       return res.send('Please Enter Some Required Movies Reletaed Data');
+      //     }
+      //     const moviedetailsdoc= await Moviesdata.create({...moviedetails})
           
-          res.status(201).send("movie has been added",moviedetailsdoc)
-        }catch(err){
-          console.log(err.message);
-          return res.send(err.message);
-        }
+      //     res.status(201).send("movie has been added",moviedetailsdoc)
+      //   }catch(err){
+      //     console.log(err.message);
+      //     return res.send(err.message);
+      //   }
+      // },
+
+      async addfavmovie(){
+
       },
 
 
@@ -274,15 +270,24 @@ module.exports = {
 
 
   async profile(req,res){
-    // const { email, password } = req.body; 
-     
+
     try{
-      const user = await User.findByEmailAndPassword(email, password);
+      if (req.session.userId) {
+        const user = await User.findByPk(req.session.userId);
+        if (!user) return res.status(400).send("no user logged in");
+        let name = user.dataValues.name;
+        let email=user.dataValues.email;
+        let city = user.dataValues.city;
+        let dob = user.dataValues.dob;
+        let userid = user.dataValues.id;
+        
+        const profileDetails = {name,email,city,dob} ;
       if(user){
-        return res.status(200).send(user.dataValues)
+        return res.status(200).send(profileDetails);
       }else{
         return res.send("please login to view the profile")
       }
+    }
 
     }catch(err){
       console.log(err.message)

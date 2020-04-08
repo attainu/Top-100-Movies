@@ -7,6 +7,7 @@ const sequelize = require("sequelize");
 
 var Moviesdata = require("../models/moviesdata");
 var Reviewsdata = require("../models/reviewdata")
+var Favmoviedata = require("../models/favtable")
 // Reviewsdata.belongsTo(Moviesdata,{as:'userreview'});
 // Moviesdata.hasMany(User);
 // User.hasMany(Reviewsdata);
@@ -14,6 +15,8 @@ var Reviewsdata = require("../models/reviewdata")
 // User.belongsToMany(Reviewsdata, { through: Moviesdata });
 Reviewsdata.belongsTo(User, {foreignKey:'fk_UserId', targetKey:'id'});
 Reviewsdata.belongsTo(Moviesdata, {foreignKey:'fk_mid', targetKey:'mid'});
+Favmoviedata.belongsTo(User, {foreignKey:'fk_Userid', targetKey:'id'});
+Favmoviedata.belongsTo(Moviesdata, {foreignKey:'fk_title', targetKey:'title'});
 
 // Reviewsdata.hasMany(User, {as: ''})
 // Moviesdata.belongsToMany(User, { through: Reviewsdata });
@@ -31,7 +34,7 @@ const { allmovies,
      homepage,
      confirmation,
      logoutUser,
-     addmovie,
+     addfavmovie,
      profile
      
      
@@ -74,7 +77,7 @@ router.post("/deactivate", auth, deactivateAccount);
 router.post("/logout",logoutUser);
 router.post("/confirmation/:token",confirmation);
 router.post("/rateandreview",auth,reviewSystem);
-router.post("/addmovie",auth,addmovie)
+router.post("/addfavmovie",auth,addfavmovie)
 
 // router.post('/logout', function(req, res, next) {
 //   if (req.session) {

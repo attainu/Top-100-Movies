@@ -67,6 +67,7 @@ const moviesdataSchema = {
     title:{
       type:Sequelize.TEXT,
       allowNull: true,
+      unique:true,
       foreignKey:true
     },
     vote_average:{
@@ -103,7 +104,7 @@ const moviesdataSchema = {
     sequelize,
     tableName: "moviesdata"
   });
-  // Moviesdata.sync({alter:true});
+  Moviesdata.sync({alter:true});
 
 
   module.exports = Moviesdata;
