@@ -1,6 +1,9 @@
 const mongoose = require('mongoose')
 const mongoosePginate = require('mongoose-paginate')
+const userReview = require('./UserReview')
+
 const Schema = mongoose.Schema
+
 
 const movieGenerSchema = new Schema(
     {
@@ -15,8 +18,8 @@ const movieGenerSchema = new Schema(
             type:Number
         },
         poster_path:{
-            type:String,
-            require:true
+            type:String
+            
         },
         id:{
             type:Number
@@ -28,12 +31,12 @@ const movieGenerSchema = new Schema(
             type:String
         },
         original_language:{
-            type:String,
-            required:true
+            type:String
+           
         },
         original_title:{
-            type:String,
-            required:true
+            type:String
+           
         },
         genre_ids:[
             {
@@ -41,30 +44,34 @@ const movieGenerSchema = new Schema(
             }
         ],
         title:{
-            type:String,
-            required:true
+            type:String
+            
         },
         vote_average:{
             type:Number
         },
         overview:{
-            type:String,
-            required:true
+            type:String
+           
         },
         release_date:{
-            type:String,
-            required:true
+            type:String
+           
         },
         UserReviews:[
             {
                 Name:{
                     type:String
+                    
+                    
                 },
                 Email:{
                     type:String
+                   
                 },
                 Reviews:{
                     type:String
+                   
                 }
             }
         ]

@@ -11,7 +11,7 @@ const userreview = new Schema(
             type:String,
             required:true
         },
-        movie_title:{
+        Movie_title:{
             type:String,
             require:true
         },

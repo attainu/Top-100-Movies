@@ -59,34 +59,34 @@ module.exports = {
     async reviewSystem(req,res) {
         
         try {
-            const {title,_id,review,rate} = req.body;
-            const conform  = await usermovieSys.findOne({$and : [ {movie_id:_id},{user_id:req.user._id} ]})   
+            const {title,id,review,rate} = req.body;
+            const conform  = await usermovieSys.findOne({$and : [ {movie_id:id},{user_id:req.user._id} ]})   
         if(!conform) {
-            if (title && _id){
-                const matchingmoviesTitle = await  movieDb.findOne({$and:[ {title:title},{_id:_id} ]})
+            if (title && id){
+                const matchingmoviesTitle = await  movieDb.findOne({$and:[ {title:title},{_id:id} ]})
                 if(matchingmoviesTitle){
                 if(review || rating){
                         const reviewSys = await usermovieSys.create({
-                        "movie_id" : _id,
+                        "movie_id" : id,
                         "user_id"  :req.user._id,
                         "Movie_title":title,
                         "user_name":req.user.name,
                         "user_email":req.user.email,
                         "review": review,
                         "rate":rate
+                        
                     })
-                    
-                    let {vote_count,vote_average,UserReviews} = await movieDb.findOne({_id :_id}) 
-                   // console.log(req.user.name)
-                   const findMovie = await movieDb.findOne({_id:_id})
-                   if(!findMovie){return res.send('Movies Id Not Found ')}
-                   var userR = new  movieDb({UserReviews:[{Name:req.user.name},{Email:req.user.email},{Reviews:review}]})
-                    userR.save((err,save)=>{
-                        if(!err){console.log('success')} console.log('err')
-                    })
-                   // await movieDb.save({UserReviews:[{Name:req.user.name},{Email:req.user.email},{Reviews:review}]})
+                  await  movieDb.findOneAndUpdate(
+                       {_id:id},
+                       {$push:{UserReviews:[{Name:req.user.name,Email:req.user.email,Reviews:review}]}}
+                   )
+                   
+                   
+                    let {vote_count,vote_average} = await movieDb.findOne({_id :id}) 
                      let averageVote = parseInt(vote_average)                  
-                    let voters =parseInt( vote_count);                   
+                    let voters =parseInt( vote_count);   
+                    
+                    
                     
                     //update rating
                         //  where:
@@ -122,15 +122,18 @@ module.exports = {
             }
             inputValue = beforeDot + afterDot;
             voters =parseInt( vote_count)+1
-            await movieDb.updateOne({_id:_id},{vote_average:inputValue})
-            await movieDb.updateOne({_id:_id},{vote_count:voters})           
-                       
+            await movieDb.updateOne({_id:id},{vote_average:inputValue})
+            await movieDb.updateOne({_id:id},{vote_count:voters})           
+            
+            return res.status(201).json({
+               
+                statusCode: 201,
+                'message':"Thanks for gives some feedback"
+                         
+            });
+           
         
-                    return res.status(201).json({
-                        statusCode: 201,
-                        reviewSys
-                                 
-                    });
+                   
                 }
             
                 else{
