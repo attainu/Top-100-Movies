@@ -246,31 +246,28 @@ module.exports = {
               const Userid =  user.dataValues.id;
               const name =   user.dataValues.name;
               const useremail =  user.dataValues.email;
-            if(user){
-            
+              
+
+            if(user)
+            {
             const {review,rate,mid} = req.body;
             console.log("beforemovie id")
-            // const movie = await Moviesdata.findAll()
-            // const title=movie.dataValues.title;
-              // console.log(movie);
-              // console.log(user.dataValues.id)
-                console.log(req.body.review)
+            console.log(req.body.review)
+            console.log(rate)
+            console.log(req.body)
+            const reviewerData = await Reviewsdata.create({
+                    fk_mid : mid,
+                    fk_UserId  : Userid,
+                    name: name,
+                    email: useremail,
+                    review:review,
+                    rate:rate
+                });
                 console.log(rate)
-                console.log(req.body)
-                        const reviewerData = await Reviewsdata.create({
-                        MoviesdatumMid : ,
-                        UserId  : Userid,
-                        name: name,
-                        email: useremail,
-                        review:review,
-                        rate:rate
-                    });
-                    
-                    return res.status(201).send(reviewerData);
-                
-               
-                }
+                return res.status(201).send("data inserted");
+            }
         }catch (error) {
+          console.log(error.errors)
           return res.send(error.message) ;
     }
   },

@@ -12,8 +12,8 @@ var Reviewsdata = require("../models/reviewdata")
 // User.hasMany(Reviewsdata);
 // Reviewsdata.hasMany(User);
 // User.belongsToMany(Reviewsdata, { through: Moviesdata });
-Reviewsdata.belongsTo(User);
-Reviewsdata.belongsTo(Moviesdata, {as: ''})
+Reviewsdata.belongsTo(User, {foreignKey:'fk_UserId', targetKey:'id'});
+Reviewsdata.belongsTo(Moviesdata, {foreignKey:'fk_mid', targetKey:'mid'});
 
 // Reviewsdata.hasMany(User, {as: ''})
 // Moviesdata.belongsToMany(User, { through: Reviewsdata });

@@ -21,7 +21,7 @@ const reviewdataSchema = {
     email: {
         type:Sequelize.TEXT,
       allowNull: true,
-      unique: true,
+      // unique: true,
       foreignKey:true
 
     },
