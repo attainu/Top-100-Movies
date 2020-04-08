@@ -66,22 +66,36 @@ const moviesdataSchema = {
     },
     title:{
       type:Sequelize.TEXT,
-      allowNull: true
+      allowNull: true,
+      foreignKey:true
     },
     vote_average:{
       type:Sequelize.DOUBLE,
-      allowNull: true
+      allowNull: true,
+      foreignKey:true
     },
     vote_count:{
       type:Sequelize.DOUBLE,
-      allowNull: true
+      allowNull: true,
+      foreignKey:true
     },
     mid:{
       type:Sequelize.DOUBLE,
       allowNull: false,
       unique: true,
+      foreignKey:true,
       
       primaryKey: true
+    },
+    createdAt: {
+      allowNull: false,
+      defaultValue: new Date(),
+      type: Sequelize.DATE
+    },
+    updatedAt: {
+      allowNull: false,
+      defaultValue: new Date(),
+      type: Sequelize.DATE
     }
   
   };
@@ -89,6 +103,7 @@ const moviesdataSchema = {
     sequelize,
     tableName: "moviesdata"
   });
-  
+  // Moviesdata.sync({alter:true});
+
 
   module.exports = Moviesdata;

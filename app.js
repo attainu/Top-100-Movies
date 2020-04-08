@@ -5,6 +5,14 @@ const passport = require("passport");
 // const cookieParser = require('cookie-parser');
 
 
+
+
+
+
+
+
+
+
 const dotenv = require("dotenv");
 dotenv.config();
 require("./db")
@@ -35,7 +43,7 @@ app.use(passport.initialize());
 //Routes
 app.use(require("./routes/userroutes"))
 
-app.get('/',(_,res) => res.send('Hello world'));
+app.get('/',(_,res) => res.send('Hello folks'));
 app.get('/logout',(_, res) => res.send('you have been logged out successfully'));
 
 module.exports = app ;

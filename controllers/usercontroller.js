@@ -172,11 +172,11 @@ module.exports = {
               const useremail =  user.dataValues.email;
               
             
-            
+            if(user){
             // const {userid,email,name} = req.user 
             // console.log(useremail);
             const {review,rate} = req.body;
-            const mid =req.body.mid;
+            const mid = await Moviesdata.findOne({where:mid});
             const title=req.body.title;
             const confirm  = await Reviewsdata.findOne({$or : [ {movie_id:mid},{user_id:userid} ]})   
         // if(confirm) {
@@ -189,7 +189,6 @@ module.exports = {
                         ({
                         "movie_id" : mid,
                         "user_id"  : userid,
-                        "Movie_title":title,
                         "user_name": name,
                         "user_email": useremail,
                         "review": review,
@@ -268,7 +267,7 @@ module.exports = {
         // else {
         //     return res.send('Please Dont Do this Duplicate!!!')
         // }
-       
+                  }//if user block 
         } catch (error) {
             return res.send(error.message)
         }

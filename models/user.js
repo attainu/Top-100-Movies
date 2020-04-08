@@ -29,7 +29,8 @@ const userSchema = {
   email: {
     type: Sequelize.STRING,
     unique: true,
-    allowNull: false
+    allowNull: false,
+    foreignKey:true
   },
   
   Isconfirmed:{
@@ -55,6 +56,16 @@ const userSchema = {
   dob: {
     type: Sequelize.STRING,
     allowNull: false
+  },
+  createdAt: {
+    allowNull: false,
+    defaultValue: new Date(),
+    type: Sequelize.DATE
+  },
+  updatedAt: {
+    allowNull: false,
+    defaultValue: new Date(),
+    type: Sequelize.DATE
   }
 
 };
@@ -67,6 +78,7 @@ User.init(userSchema, {
   tableName: "users"
 });
 
+// User.sync({alter:true});
 
 
 User.beforeCreate(async user => {

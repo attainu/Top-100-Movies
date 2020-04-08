@@ -3,6 +3,7 @@ const { Sequelize,DataTypes, Model } = require("sequelize");
 
 
 
+
 // according to sir lecture
 
 
@@ -12,51 +13,56 @@ const { Sequelize,DataTypes, Model } = require("sequelize");
 class Reviewsdata extends Model {}
 
 const reviewdataSchema = {
-    Mid: {
-        type:Sequelize.DOUBLE,
-      allowNull: true,
-      unique: false
-    },
-    userid: {
-        type:Sequelize.DOUBLE,
-      allowNull: true,
-      unique: true,
-      primarykey: true
-
-    },
-    title: {
-      type:Sequelize.TEXT,
-    allowNull: true,
-    unique: false
-
-  },
+   name:{
+     type:Sequelize.TEXT,
+     allowNull:true,
+     foreignKey:true
+   },
     email: {
         type:Sequelize.TEXT,
       allowNull: true,
-      unique: true
+      unique: true,
+      foreignKey:true
 
     },
     review: {
         type:Sequelize.TEXT,
-      allowNull: true
+      allowNull: true,
+      foreignKey:true
     },
     rate: {
         type:Sequelize.DOUBLE,
-      allowNull: true
+      allowNull: true,
+      foreignKey:true
 
+    },
+    createdAt: {
+      allowNull: false,
+      // defaultValue: new Date(),
+      type: Sequelize.DATE,
+      field: 'beginTime',
+    defaultValue: sequelize.literal('NOW()')
+    },
+    updatedAt: {
+      allowNull: false,
+      // defaultValue: new Date(),
+      type: Sequelize.DATE,
+      field: 'beginTime',
+    defaultValue: sequelize.literal('NOW()')
     }
+  
 
 };
 
 
-// Reviewsdata.associate = function(Model){
-
-// }
 
 Reviewsdata.init(reviewdataSchema, {
     sequelize,
     tableName:"Moviereviews"
 })
+
+// Reviewsdata.sync({alter:true});
+
 module.exports = Reviewsdata;
 
 

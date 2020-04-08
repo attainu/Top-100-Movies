@@ -2,6 +2,19 @@ const { Router } = require('express');
 const auth = require("../middleware/authenticate");
 const User = require("../models/User");
 const jwt = require("jsonwebtoken");
+const sequelize = require("sequelize");
+
+
+var Moviesdata = require("../models/moviesdata");
+var Reviewsdata = require("../models/reviewdata")
+// Reviewsdata.belongsTo(Moviesdata,{as:'userreview'});
+Moviesdata.hasMany(User);
+// User.hasMany(Reviewsdata);
+// Reviewsdata.hasMany(User);
+User.belongsToMany(Moviesdata, { through: Reviewsdata });
+Moviesdata.belongsToMany(User, { through: Reviewsdata });
+
+
  
 const router = Router();
 const { allmovies,
