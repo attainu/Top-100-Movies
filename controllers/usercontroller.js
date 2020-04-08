@@ -138,7 +138,7 @@ module.exports = {
             return res.status(401).send("Incorrect credentials");
           }
           await user.update({ password: newPassword });
-          return res.redirect("/");
+          return res.send("please login password has been updated");
         } catch (err) {
           console.log(err.message);
           res.redirect("/change-password");
@@ -158,122 +158,7 @@ module.exports = {
           res.status(500).send("Server Error");
         }
       },
-
-
-
-      async reviewSystem(req,res) {
-    
-        try { 
-              const {email} = req.body
-              console.log("review system------")
-              const user = await User.findOne({where: email});
-              const userid =  user.dataValues.id;
-              const name =   user.dataValues.name;
-              const useremail =  user.dataValues.email;
-              
-            
-            if(user){
-            // const {userid,email,name} = req.user 
-            // console.log(useremail);
-            const {review,rate} = req.body;
-            const mid = await Moviesdata.findOne({where:mid});
-            const title=req.body.title;
-            const confirm  = await Reviewsdata.findOne({$or : [ {movie_id:mid},{user_id:userid} ]})   
-        // if(confirm) {
-            // if (title && mid){
-              console.log(title,mid);
-                const matchingmoviesTitle = await  Moviesdata.findOne({$and:[ {title:title},{mid:mid} ]})
-                // if(matchingmoviesTitle){
-                // if(review || rating){
-                        const reviewSys = await Reviewsdata.create
-                        ({
-                        "movie_id" : mid,
-                        "user_id"  : userid,
-                        "user_name": name,
-                        "user_email": useremail,
-                        "review": review,
-                        "rate":rate
-                    })
-                    
-                    let {vote_count,vote_average,UserReviews} = await Moviesdata.findOne({_id :mid}) 
-                   
-                  //  const findMovie = await Moviesdata.findOne({mid:mid})
-                  //  if(!findMovie){return res.send('Movies Id Not Found ')}
-                  //  var userR = new  Moviesdata({UserReviews:[{Name:name},{Email:email},{Reviews:review}]})
-                  //   userR.save((err,save)=>{
-                  //       if(!err){console.log('success')} console.log('err')
-                  //   })
-                  
-                     let averageVote = parseInt(vote_average)                  
-                    let voters =parseInt( vote_count);                   
-                    
-                    //update rating
-                        //  where:
-        //   R = average for the movie (mean) = (Rating)
-        //   v = number of votes for the movie = (votes)
-        //   m = minimum votes required to be listed in the Top 250 (currently 1250)
-        //   C = the mean vote across the whole report (currently )
-                    let R = rate;
-                    let v = voters;
-                    let m = 1250;
-                    let C = averageVote
-                    
-                    var rank  = (v / (v+m)) * R + (m / (v+m)) * C;
-                    var inputValue=rank.toString()           
-                    var afterDot = '';
-                    var beforeDots = inputValue.split('.'); 
-                    var beforeDot = beforeDots[0];
-                    if(beforeDots[1]){
-                         var afterDot = beforeDots[1];
-                            if(afterDot.length > 3 ){
-                            afterDot = afterDot.slice(0, 2);               
-                            }
-                    afterDot = '.'+ afterDot;
-        
-            }
-            if(beforeDot){                  
-                if(beforeDot.length > 6 ){          
-                    beforeDot = beforeDot.slice(0, 6);                      
-                }
-                if(beforeDots[1] == ''){
-                    beforeDot = beforeDot + '.';
-                }
-            }
-            inputValue = beforeDot + afterDot;
-            voters =parseInt( vote_count)+1
-            await Reviewsdata.update({_id:mid},{vote_average:inputValue})
-            await Reviewsdata.update({_id:mid},{vote_count:voters})           
-                       
-        
-                    return res.status(201).json({
-                        statusCode: 201,
-                        reviewSys
-                                 
-                    });
-                // }
-            
-        //         else{
-        //             return res.send('please give me rating or review')
-        //         }
-        //     // }
-        //     else {
-        //         return res.send('Id And Title are not matched')
-        //     }
-        //     }
-        //     else {
-        //         return res.send('please enter the title or id something !')
-        //     }
-        // }
-        // else {
-        //     return res.send('Please Dont Do this Duplicate!!!')
-        // }
-                  }//if user block 
-        } catch (error) {
-            return res.send(error.message)
-        }
-    },
-
-    //host/-
+      //host/-
     async allmovies(req,res){
 
       Moviesdata.findAll({}).then((data) => {
@@ -341,7 +226,101 @@ module.exports = {
           console.log(err.message);
           return res.send(err.message);
         }
-      }
+      },
+
+
+
+      async reviewSystem(req,res) {
+    
+        try { 
+              const {email} = req.body
+              console.log("review system------")
+              const user = await User.findOne({where: email});
+              const Userid =  user.dataValues.id;
+              const name =   user.dataValues.name;
+              const useremail =  user.dataValues.email;
+            if(user){
+            // const {userid,email,name} = req.user 
+            // console.log(useremail);
+            const {review,rate,mid} = req.body;
+            console.log("beforemovie id")
+            const movie = await Moviesdata.findOne({where:mid});
+            
+            const title=movie.dataValues.title;
+            
+        // if( movie) {
+            // if (title && mid){
+              console.log(movie);
+              console.log(user)
+                
+                        const reviewSys = await Reviewsdata.create({
+                        "moviereviewid" : movie,
+                        "user_id"  : user.dataValues.id,
+                        "user_name": name,
+                        "user_email": useremail,
+                        "review": review,
+                        "rate":rate
+                    });
+                    
+                    let {vote_count,vote_average,UserReviews} = await Moviesdata.findOne({_id :mid}) 
+                   
+                  
+                  
+                     let averageVote = parseInt(vote_average)                  
+                    let voters =parseInt( vote_count);                   
+                    
+                    //update rating
+                        //  where:
+        //   R = average for the movie (mean) = (Rating)
+        //   v = number of votes for the movie = (votes)
+        //   m = minimum votes required to be listed in the Top 250 (currently 1250)
+        //   C = the mean vote across the whole report (currently )
+                    let R = rate;
+                    let v = voters;
+                    let m = 1250;
+                    let C = averageVote
+                    
+                    var rank  = (v / (v+m)) * R + (m / (v+m)) * C;
+                    var inputValue=rank.toString()           
+                    var afterDot = '';
+                    var beforeDots = inputValue.split('.'); 
+                    var beforeDot = beforeDots[0];
+                    if(beforeDots[1]){
+                         var afterDot = beforeDots[1];
+                            if(afterDot.length > 3 ){
+                            afterDot = afterDot.slice(0, 2);               
+                            }
+                    afterDot = '.'+ afterDot;
+        
+            }
+            if(beforeDot){                  
+                if(beforeDot.length > 6 ){          
+                    beforeDot = beforeDot.slice(0, 6);                      
+                }
+                if(beforeDots[1] == ''){
+                    beforeDot = beforeDot + '.';
+                }
+            }
+            inputValue = beforeDot + afterDot;
+            voters =parseInt( vote_count)+1
+            await Reviewsdata.update({_id:mid},{vote_average:inputValue})
+            await Reviewsdata.update({_id:mid},{vote_count:voters})           
+                       
+        
+                    return res.status(201).json({
+                        statusCode: 201,
+                        reviewSys
+                                 
+                    });
+                
+                 // }//else{res.status(400).send("please enter a valid movie id")}//if user block 
+                }
+        }catch (error) {
+          return res.send(error.message) ;
+    }
+  }
+
+    
       
     
     

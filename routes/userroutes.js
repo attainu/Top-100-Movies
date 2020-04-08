@@ -8,7 +8,7 @@ const sequelize = require("sequelize");
 var Moviesdata = require("../models/moviesdata");
 var Reviewsdata = require("../models/reviewdata")
 // Reviewsdata.belongsTo(Moviesdata,{as:'userreview'});
-Moviesdata.hasMany(User);
+// Moviesdata.hasMany(User);
 // User.hasMany(Reviewsdata);
 // Reviewsdata.hasMany(User);
 User.belongsToMany(Moviesdata, { through: Reviewsdata });

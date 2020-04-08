@@ -9,8 +9,8 @@ const sequelize = new Sequelize(POSTGRES_URI.replace('<password>',POSTGRES_PASSW
     // }
 );
 
- sequelize.sync({alter:true});
-// sequelize.sync();
+//  sequelize.sync({alter:true});
+sequelize.sync();
 
 sequelize
 .authenticate()
