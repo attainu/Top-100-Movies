@@ -67,7 +67,7 @@ const moviesdataSchema = {
     title:{
       type:Sequelize.TEXT,
       allowNull: true,
-      unique:true,
+      // unique:true,
       foreignKey:true
     },
     vote_average:{

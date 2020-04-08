@@ -16,7 +16,7 @@ var Favmoviedata = require("../models/favtable")
 Reviewsdata.belongsTo(User, {foreignKey:'fk_UserId', targetKey:'id'});
 Reviewsdata.belongsTo(Moviesdata, {foreignKey:'fk_mid', targetKey:'mid'});
 Favmoviedata.belongsTo(User, {foreignKey:'fk_Userid', targetKey:'id'});
-Favmoviedata.belongsTo(Moviesdata, {foreignKey:'fk_title', targetKey:'title'});
+Favmoviedata.belongsTo(Moviesdata, {foreignKey:'fk_mid', targetKey:'mid'});
 
 // Reviewsdata.hasMany(User, {as: ''})
 // Moviesdata.belongsToMany(User, { through: Reviewsdata });

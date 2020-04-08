@@ -227,7 +227,30 @@ module.exports = {
       //   }
       // },
 
-      async addfavmovie(){
+      async addfavmovie(req,res){
+        try{
+              const {email} = req.body
+              console.log("fav movie function")
+              const user = await User.findOne({where:email});
+              const Userid =  user.dataValues.id;
+              const name =   user.dataValues.name;
+              console.log(Userid)
+                if(user){
+                const{mid}=req.body;
+                console.log(Userid)
+                const favmdata = await Favmoviedata.create({
+                  fk_mid : mid,
+                  fk_Userid  : Userid
+                });
+              return res.status(200).send(`your fav movie added to your profile `);
+          }else{
+            return res.send("please login to add movie to your favourites")
+          }
+          
+          }catch(error){
+            console.log(error)
+            return res.send(error.message)
+          }
 
       },
 
@@ -260,7 +283,9 @@ module.exports = {
                     rate:rate
                 });
                 console.log(rate)
-                return res.status(201).send("data inserted");
+                return res.status(201).send(`thank for your valuable feedback"`);
+            }else{
+              res.send("please login to rate and review movie")
             }
         }catch (error) {
           console.log(error.errors)
@@ -280,8 +305,13 @@ module.exports = {
         let city = user.dataValues.city;
         let dob = user.dataValues.dob;
         let userid = user.dataValues.id;
-        
-        const profileDetails = {name,email,city,dob} ;
+        const favmovie = await Favmoviedata.findAll({where :{fk_Userid :userid}})
+        let favourite_movies=[]
+        for (let i=0;i<favmovie.length;i++){
+          let x = await Moviesdata.findOne({where:{ mid: favmovie[i].dataValues.fk_mid}})
+          favourite_movies.push(x.dataValues.title)
+        }
+        const profileDetails = {name,email,city,dob,favourite_movies} ;
       if(user){
         return res.status(200).send(profileDetails);
       }else{
