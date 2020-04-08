@@ -12,7 +12,7 @@ var Reviewsdata = require("../models/reviewdata")
 // User.hasMany(Reviewsdata);
 // Reviewsdata.hasMany(User);
 User.belongsToMany(Moviesdata, { through: Reviewsdata });
-Moviesdata.belongsToMany(User, { through: Reviewsdata });
+// Moviesdata.belongsToMany(User, { through: Reviewsdata });
 
 
  

@@ -57,7 +57,7 @@ module.exports = {
           } 
           
           //try block end
-          res.redirect("/login");
+          res.send("please confirm your email to access the page");
         } catch (error) {
           console.log(error);
           if (error.name === "SequelizeValidationError")
@@ -86,27 +86,33 @@ module.exports = {
       
     
       async loginUser(req, res) {
+
         // Get the users json file
         const { email, password } = req.body; 
         console.log("loginuser ----------")
-        const user = await User.findByEmailAndPassword(email, password);
+        try {
+
         // console.log("---------------------------------") 
         // console.log(user.dataValues.Isconfirmed)
         // console.log("---------------------------------") 
         //email confimation check//
-        if(!user.dataValues.Isconfirmed)
-          return res.status(400).send('please confirm your email to login');    
+        
         if (!email || !password)
-          return res.status(400).send("Incorrect credentials");
-        try {
+          return res.send("Incorrect credentials");
+          const user = await User.findByEmailAndPassword(email, password);
+
+          if(!user.dataValues.Isconfirmed)
+        {
+          return res.status(400).send('please confirm your email to login');  
+         } 
           console.log("login ----------")
           await User.update({ Isactive: true }, { where:  {email : user}, });
           req.session.userId = user.dataValues.id;
           // console.log(user);
-          return res.redirect("/home");
+          return res.send("you have logged in successfully to access top rated 100 movies get to /home")
         } catch (err) {
           console.log(err.message);
-          return res.redirect("/login");
+          return res.send("incorrect credentials");
         }
       },
       
@@ -141,7 +147,7 @@ module.exports = {
           return res.send("please login password has been updated");
         } catch (err) {
           console.log(err.message);
-          res.redirect("/change-password");
+          res.send("incorrect credentials");
         }
       },
     
@@ -235,7 +241,7 @@ module.exports = {
         try { 
               const {email} = req.body
               console.log("review system------")
-              const user = await User.findOne({where: email});
+              const user = await User.findOne({include:{model:User,where:{email}}});
               const Userid =  user.dataValues.id;
               const name =   user.dataValues.name;
               const useremail =  user.dataValues.email;
