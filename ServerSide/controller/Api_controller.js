@@ -1,6 +1,7 @@
 const movieDb = require('../model/movieGener')
 const fuzzysearch = require('mongoose-fuzzy-searching')
 const usermovieSys = require('../model/UserReview')
+const userdashboard = require('../model/User')
 module.exports = {
     async allMovie (req,res){
         try{
@@ -80,7 +81,10 @@ module.exports = {
                        {_id:id},
                        {$push:{UserReviews:[{Name:req.user.name,Email:req.user.email,Reviews:review}]}}
                    )
-                   
+                   await userdashboard.findOneAndUpdate(
+                       {_id:req.user._id},
+                       {$push:{movieInfo:[{movie_id:id,movie_title:title,rate:rate,Review:review}]}}
+                   )
                    
                     let {vote_count,vote_average} = await movieDb.findOne({_id :id}) 
                      let averageVote = parseInt(vote_average)                  
@@ -154,6 +158,7 @@ module.exports = {
         } catch (error) {
             return res.send(error.message)
         }
-    }
+    },
+    
 
 }

@@ -3,6 +3,9 @@ const {verify} = require('jsonwebtoken');
 const {compare , hash} = require('bcryptjs')
 const { sign } = require("jsonwebtoken");
 const nodemailer = require('nodemailer')
+const userSchema = require('../../model/User') 
+const moviedb = require('../../model/movieGener')
+const userMovieReview = require('../../model/UserReview')
 
 
 module.exports = {
@@ -95,6 +98,45 @@ module.exports = {
     catch (error) {
       console.log(error.message)
     } 
+    },
+
+    //dashboard route
+    async dashboard (req,res){
+      try{
+       const userdetails = await userSchema.paginate({_id:req.user._id})
+        return res.send(userdetails)
+      
+      }
+      catch(err){
+        return res.send(err.message)
+      }
+      
+    },
+
+    //update review 
+
+    async updatereview(req,res){
+      try {
+      //     const {movie_id,review} = req.body;
+      //   const com1=  await userSchema.updateOne(
+      //     {$and: {_id:req.user._id}}
+      //      ,{$set:{movieInfo:[{Review:review}]}}
+      //     )
+      //  const com2=   await moviedb.updateOne(
+      //       {_id:movie_id},{$set:{UserReviews:[{Review:review}]}}
+      //     )
+      //    const com3= await userMovieReview.updateOne(
+      //       {user_id:req.user._id},{$set:{review:review}}
+      //     )
+      //     if(!com1 &&!com2 && !com3){
+      //       return res.send('something error occured')
+      //     }
+          return res.send('Review Updation success')
+
+      }
+      catch(err){
+        return res.send(err.message)
+      }
     },
     
 

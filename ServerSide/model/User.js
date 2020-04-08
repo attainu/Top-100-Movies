@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 const { sign } = require("jsonwebtoken");
 const nodemailer = require('nodemailer')
+const paginate = require('mongoose-paginate')
 const Schema = mongoose.Schema;
 
 const userSchema = new Schema(
@@ -37,7 +38,23 @@ const userSchema = new Schema(
     accessToken: {
       type: String,
       trim: true
-    }
+    },
+    movieInfo:[
+      {
+        movie_id:{
+          type:String
+        },
+        movie_title:{
+          type:String
+        },
+        rate:{
+          type:String
+        },
+        Review:{
+          type:String
+        }
+      }
+    ]
   },
   { timestamps: true }
 );
@@ -89,7 +106,7 @@ userSchema.pre("save", async function(next) {
     next(err);
   }
 });
-
+userSchema.plugin(paginate)
 const User = mongoose.model("user", userSchema);
 
 module.exports = User;
