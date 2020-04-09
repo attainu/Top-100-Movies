@@ -5,9 +5,7 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    
     "test-dev": "jest"
-    
   },
   "repository": {
     "type": "git",
@@ -18,17 +16,14 @@
   ],
   "author": "Sanjay Bhargav Bandaru",
   "license": "ISC",
-  
   "bugs": {
     "url": "https://github.com/attainu/Top-100-Movies/issues"
   },
-  
   "homepage": "https://github.com/attainu/Top-100-Movies#readme",
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
-    "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "express-session": "^1.17.0",
     "express-validator": "^6.4.0",
@@ -43,6 +38,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.9.0",
+    "dotenv": "^8.2.0",
     "jest": "^25.3.0",
     "nodemon": "^2.0.2"
   }
