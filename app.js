@@ -19,7 +19,7 @@ app.use(
     name: "sequelizeSession",
     saveUninitialized: false,
     cookie: {
-      maxAge: 1000 * 60 * 1000,
+      maxAge: 1000 * 60 * 100000,
       httpOnly: true,
       secure: false,
       sameSite: "strict"

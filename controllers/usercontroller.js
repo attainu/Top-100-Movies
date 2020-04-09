@@ -271,9 +271,6 @@ module.exports = {
             {
             const {review,rate,mid} = req.body;
             console.log("beforemovie id")
-            console.log(req.body.review)
-            console.log(rate)
-            console.log(req.body)
             const reviewerData = await Reviewsdata.create({
                     fk_mid : mid,
                     fk_UserId  : Userid,
@@ -282,13 +279,62 @@ module.exports = {
                     review:review,
                     rate:rate
                 });
-                console.log(rate)
+
+                // rating update system start
+                let {vote_count,vote_average}=await Moviesdata.findOne({where:{mid:mid}})
+                let averageVote = parseInt(vote_average)                  
+                let voters =parseInt( vote_count);
+                 
+                    //update rating
+                        //  where:
+        //   R = average for the movie (mean) = (Rating)
+        //   v = number of votes for the movie = (votes)
+        //   m = minimum votes required to be listed in the Top 250 (currently 1250)
+        //   C = the mean vote across the whole report (currently )
+        let R = rate;
+        let v = voters;
+        let m = 1250;
+        let C = averageVote
+        console.log(voters)
+        console.log(averageVote)
+        var rank  = (v / (v+m)) * R + (m / (v+m)) * C;
+        var inputValue=rank.toString()           
+        var afterDot = '';
+        var beforeDots = inputValue.split('.'); 
+        var beforeDot = beforeDots[0];
+        if(beforeDots[1]){
+             var afterDot = beforeDots[1];
+                if(afterDot.length > 3 ){
+                afterDot = afterDot.slice(0, 2);               
+                }
+        afterDot = '.'+ afterDot;
+
+}
+if(beforeDot){                  
+    if(beforeDot.length > 6 ){          
+        beforeDot = beforeDot.slice(0, 6);                      
+    }
+    if(beforeDots[1] == ''){
+        beforeDot = beforeDot + '.';
+    }
+}
+inputValue = beforeDot + afterDot;
+voters =parseInt( vote_count)+1
+console.log(mid,inputValue)
+const foundmovie =await Moviesdata.findOne({where:{mid:mid}}) 
+if(foundmovie){
+await foundmovie.update({vote_average:inputValue})
+await foundmovie.update({vote_count:voters},{where: {mid:mid}})
+}
+
+// rating update end
+              // console.log(updatedvoteavg,updatedvotecount);
                 return res.status(201).send(`thank for your valuable feedback"`);
             }else{
               res.send("please login to rate and review movie")
             }
         }catch (error) {
-          console.log(error.errors)
+          console.log(error.message)
           return res.send(error.message) ;
     }
   },
