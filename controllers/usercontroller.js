@@ -74,7 +74,7 @@ module.exports = {
           return res.status(400).send("Email confirmation issue");
         }
         // return res.send("didnt enter confirmation try block");
-        return res.redirect(`http://localhost:1234/login`);
+        return res.send("your email has been verified please login");
       },
       
     
