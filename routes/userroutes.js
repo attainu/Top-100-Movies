@@ -56,20 +56,7 @@ router.post("/confirmation/:token",confirmation);
 router.post("/rateandreview",auth,reviewSystem);
 router.post("/addfavmovie",auth,addfavmovie)
 
-// router.post('/logout', function(req, res, next) {
-//   if (req.session) {
-//     console.log(req.session.id);
-//     // delete session object
-//     req.session.destroy(function(err) {
-//       if(err) {
-//         return next(err);
-//       } else {
-//         console.log("you have been logged out succesfully");
-//         return res.redirect('/login');
-//       }
-//     });
-//   }
-// });
+
 
 
 module.exports = router;
