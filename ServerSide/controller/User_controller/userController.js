@@ -116,10 +116,13 @@ module.exports = {
     //update review 
 
     async updatereview(req,res){
-      try {
-      //     const {movie_id,review} = req.body;
+      try{
+           const {movie_id,review} = req.body;
+            const isthere =await userSchema.findOne({movieInfo:[{movie_id:movie_id}]})
+            console.log(isthere)
       //   const com1=  await userSchema.updateOne(
       //     {$and: {_id:req.user._id}}
+
       //      ,{$set:{movieInfo:[{Review:review}]}}
       //     )
       //  const com2=   await moviedb.updateOne(
@@ -142,12 +145,14 @@ module.exports = {
 
   //user Logout Part
   async logout(req,res) {
-    const { email, password } = req.body
-    if(!email || !password){ console.log('please enter email and password') }
+    // const { email, password } = req.body
+    // const usert = req.user
+    // console.log(usert.email,usert.password,usert.accessToken)
+    // if(!email || !password){ console.log('please enter email and password') }
     
         try {
-            const {accessToken,name} = await User.findByEmailAndPassword(email, password)
-            const { id } = verify(accessToken,process.env.JWT_SECRET_KEY)
+            //const {accessToken,name} = await User.findByEmailAndPassword(email, password)
+            const { id,name} = verify(req.user.accessToken,process.env.JWT_SECRET_KEY)
             const{ nModified }= await User.updateOne({_id:id},{$set:{ accessToken:null}})
              if(nModified == 1){
              console.log('logout Success '+name)

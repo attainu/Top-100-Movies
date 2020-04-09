@@ -24,6 +24,28 @@ module.exports = {
             return res.status(500).send(err)
         }
     },
+    async toprated (req,res){
+        try{
+            const {page,perPage,rate,title} = req.query;
+            
+            const option = {
+                page:parseInt(page,10)||1,
+                limit:parseInt(perPage,10)||10
+            }
+            function escapeRegex(text) {
+                var name = text || '';
+                return name.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+            };
+            const regex = new RegExp(escapeRegex(title), 'gi');
+            const movie = await movieDb.paginate({$and:[{title:regex},{vote_average:{$gte:rate||7}}]},option)//()
+            return res.json(movie)
+        }
+        catch(err){
+            console.log(err)
+            return res.status(500).send(err)
+        }
+    },
+   
    
         async addMovieData(req,res){
             try {
