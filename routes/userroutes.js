@@ -8,21 +8,12 @@ const sequelize = require("sequelize");
 var Moviesdata = require("../models/moviesdata");
 var Reviewsdata = require("../models/reviewdata")
 var Favmoviedata = require("../models/favtable")
-// Reviewsdata.belongsTo(Moviesdata,{as:'userreview'});
-// Moviesdata.hasMany(User);
-// User.hasMany(Reviewsdata);
-// Reviewsdata.hasMany(User);
-// User.belongsToMany(Reviewsdata, { through: Moviesdata });
+//associations/relations
 Reviewsdata.belongsTo(User, {foreignKey:'fk_UserId', targetKey:'id'});
 Reviewsdata.belongsTo(Moviesdata, {foreignKey:'fk_mid', targetKey:'mid'});
 Favmoviedata.belongsTo(User, {foreignKey:'fk_Userid', targetKey:'id'});
 Favmoviedata.belongsTo(Moviesdata, {foreignKey:'fk_mid', targetKey:'mid'});
 
-// Reviewsdata.hasMany(User, {as: ''})
-// Moviesdata.belongsToMany(User, { through: Reviewsdata });
-
-
- 
 const router = Router();
 const { allmovies,
       reviewSystem,
@@ -45,7 +36,7 @@ const { allmovies,
 // get routes
 router.get("/login", loginUser);
 router.get("/register", registerUser);
-router.get("/change-password", auth, changePassword);
+router.get("/changepassword", auth, changePassword);
 router.get("/deactivate", auth, deactivateAccount);
 router.get("/logout",logoutUser);
 router.get("/confirmation/:token",confirmation);
@@ -58,7 +49,7 @@ router.get("/profile",auth,profile);
 // DB routes
 router.post("/login", loginUser);
 router.post("/register", registerUser);
-router.post("/change-password", auth, changePassword);
+router.post("/changepassword", auth, changePassword);
 router.post("/deactivate", auth, deactivateAccount);
 router.post("/logout",logoutUser);
 router.post("/confirmation/:token",confirmation);

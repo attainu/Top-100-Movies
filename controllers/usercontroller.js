@@ -151,13 +151,13 @@ module.exports = {
         try {
           console.log("deactivate account------")
           await User.destroy({ where: { email } });
-          return res.redirect("/");
+          return res.status(200).send("your account has been deactivated");
         } catch (err) {
           console.log(err.message);
           res.status(500).send("Server Error");
         }
       },
-      //host/-
+      //basepage/-
     async allmovies(req,res){
 
       Moviesdata.findAll({}).then((data) => {
@@ -175,7 +175,9 @@ module.exports = {
       });
     },
     
-    async homepage(req,res){
+
+    // protected route home page accessible after login
+    async homepage(_,res){
       // try{
       //   // Get the users json file
       // const { email, password } = req.body; 
